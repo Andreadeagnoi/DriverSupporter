@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollectorAccFiltered;
+import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollector;
 
 
 public class NoGraphsActivity extends ActionBarActivity {
@@ -26,7 +26,7 @@ public class NoGraphsActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, DataCollectorAccFiltered.class);
+        Intent intent = new Intent(this, DataCollector.class);
         PendingIntent.getBroadcast(this.getBaseContext(),
                 PendingIntent.FLAG_UPDATE_CURRENT, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -48,7 +48,7 @@ public class NoGraphsActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, DataCollectorAccFiltered.class);
+        Intent intent = new Intent(this, DataCollector.class);
         // Bind to WatcherService
         bindService(intent, mConnection, 0);
     }
@@ -77,13 +77,13 @@ public class NoGraphsActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+      /*  //noinspection SimplifiableIfStatement
         if (id == R.id.action_play) {
             if(mBound) {
                 mService.play();
             }
             else {
-                Intent intent = new Intent(this, DataCollectorAccFiltered.class);
+                Intent intent = new Intent(this, DataCollector.class);
                 PendingIntent.getBroadcast(this.getBaseContext(),
                         PendingIntent.FLAG_UPDATE_CURRENT, intent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
@@ -103,12 +103,12 @@ public class NoGraphsActivity extends ActionBarActivity {
             return true;
         }
 
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
     protected static boolean mBound;
-    protected static DataCollectorAccFiltered mService;
+    protected static DataCollector mService;
     /**
      * Defines callbacks for service binding, passed to bindService()
      */
@@ -117,7 +117,7 @@ public class NoGraphsActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            DataCollectorAccFiltered.DataCollectorAccFilteredBinder binder = (DataCollectorAccFiltered.DataCollectorAccFilteredBinder) service;
+            DataCollector.DataCollectorAccFilteredBinder binder = (DataCollector.DataCollectorAccFilteredBinder) service;
             mService = binder.getService();
             mBound = true;
         }

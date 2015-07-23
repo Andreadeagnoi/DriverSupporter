@@ -18,7 +18,7 @@ public class TestUtilities {
      * Scrive sulla memoria esterna del telefono i dati dell'accelerometro rilevati.
      * Usato per testing.
      */
-    public static void writeToExternalStorage(List<AccelerometerData> mSamples, List<AccelerometerData> mSamplesNF) {
+    public static void writeToExternalStorage(List<AccelerometerData> mSamples) {
         File root = Environment.getExternalStorageDirectory();
         File dir = new File (root.getAbsolutePath() + "/download");
         dir.mkdirs();
@@ -38,11 +38,8 @@ public class TestUtilities {
                         mSamples.get(i).getVectorLength()+";"+
                         mSamples.get(i).getLat()+";"+
                         mSamples.get(i).getLon()+";"+
-                        mSamples.get(i).getSpeed() + ";" +
-                        mSamplesNF.get(i).getX()+";"+
-                        mSamplesNF.get(i).getY()+";"+
-                        mSamplesNF.get(i).getZ()+";"+
-                        mSamplesNF.get(i).getVectorLength());
+                        mSamples.get(i).getSpeed() + ";"
+                      );
             }
             pw.flush();
             pw.close();

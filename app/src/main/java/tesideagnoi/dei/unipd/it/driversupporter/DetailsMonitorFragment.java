@@ -16,7 +16,7 @@ import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollectorAccFiltered;
+import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollector;
 
 
 /**
@@ -93,7 +93,7 @@ public class DetailsMonitorFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             // Controlla per evitare scritture al layout dopo che è stato
             // terminato il service
-            if (isMyServiceRunning(DataCollectorAccFiltered.class, context)) {
+            if (isMyServiceRunning(DataCollector.class, context)) {
                 double x = intent.getFloatExtra("xAcc", 0f);
                 double y = intent.getFloatExtra("yAcc", 0f);
                 double z = intent.getFloatExtra("zAcc", 0f);
@@ -114,7 +114,7 @@ public class DetailsMonitorFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             // Controlla per evitare scritture al layout dopo che è stato
             // terminato il service
-            if (isMyServiceRunning(DataCollectorAccFiltered.class, context)) {
+            if (isMyServiceRunning(DataCollector.class, context)) {
                 boolean evaluation = intent.getBooleanExtra("Good_Acceleration", true);
                 if (evaluation) {
                     mScore ++;

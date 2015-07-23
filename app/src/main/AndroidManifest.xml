@@ -35,7 +35,7 @@
             android:exported="true" >
         </service>
         <service
-            android:name=".services.DataCollectorAccFiltered"
+            android:name=".services.DataCollector"
             android:enabled="true"
             android:exported="true" >
         </service>

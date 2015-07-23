@@ -17,13 +17,16 @@ import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollectorAccFiltered;
+import java.util.Observable;
+import java.util.Observer;
+
+import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollector;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class EvaluationFragment extends Fragment {
+public class EvaluationFragment extends Fragment implements Observer{
 
     // Activity State
     private int mScore;
@@ -65,9 +68,10 @@ public class EvaluationFragment extends Fragment {
         mAccelerationNegativeEvaluationValue.setText(mGoodAccelerationNegative+"");
         mCurveAccelerationPositiveEvaluationValue.setText(mGoodCurveAccelerationPositive+"");
         mCurveAccelerationNegativeEvaluationValue.setText(mGoodCurveAccelerationNegative+"");
-        mLeapAccelerationPositiveEvaluationValue.setText(mGoodLeapAccelerationPositive+"");
-        mLeapAccelerationNegativeEvaluationValue.setText(mGoodLeapAccelerationNegative+"");
-        mProgressBar.setMax(1000);
+        mLeapAccelerationPositiveEvaluationValue.setText(mGoodLeapAccelerationPositive + "");
+        mLeapAccelerationNegativeEvaluationValue.setText(mGoodLeapAccelerationNegative + "");
+        mProgressBar.setMax(100);
+        final Observer observer = this;
         mSwitchService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -76,13 +80,13 @@ public class EvaluationFragment extends Fragment {
                 //TODO: orrendo che chiama così tante volte metodi dell'activity
                 if (isChecked) {
                     if (((InfoViewerActivity) getActivity()).mBound) {
-                        ((InfoViewerActivity) getActivity()).mService.play();
+                        ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
                     } else {
 
-                        ((InfoViewerActivity) getActivity()).mService.play();
+                        ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
                     }
                 } else {
-                    ((InfoViewerActivity)getActivity()).mService.stop();
+                    ((InfoViewerActivity)getActivity()).mService.stop().deleteObservers();
                 }
 
             }
@@ -90,74 +94,20 @@ public class EvaluationFragment extends Fragment {
         return rootView;
     }
 
-    /**
-     * Handler per gli intent ricevuti dall'evento "Evaluation"
-     */
-    private BroadcastReceiver mEvaluationReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Controlla per evitare scritture al layout dopo che è stato
-            // terminato il service
-            if (isMyServiceRunning(DataCollectorAccFiltered.class, context)) {
-                int evaluation = intent.getIntExtra("Good_Acceleration", 0);
-                if (evaluation > 0) {
-                    mScore ++;
-                    mGoodAccelerationPositive++;
-                }
-                else if (evaluation < 0){
-
-                    mGoodAccelerationNegative++;
-                    mScore -= 1000;
-                }
-                evaluation = intent.getIntExtra("Good_Curve_Acceleration", 0);
-                if (evaluation > 0) {
-                    mScore ++;
-                    mGoodCurveAccelerationPositive++;
-                }
-                else if (evaluation < 0){
-                    mGoodCurveAccelerationNegative++;
-                    mScore -= 1000;
-                }
-                evaluation = intent.getIntExtra("Good_Leap_Acceleration", 0);
-                if (evaluation > 0) {
-                    mScore ++;
-                    mGoodLeapAccelerationPositive++;
-                }
-                else if (evaluation < 0){
-                    mGoodLeapAccelerationNegative++;
-                    mScore -= 1000;
-                }
-                if (mScore < 0){
-                    mScore = 0;
-                }
-                if (mScore > 5000){
-                    mScore = 5000;
-                }
-                mAccelerationPositiveEvaluationValue.setText(mGoodAccelerationPositive+"");
-                mAccelerationNegativeEvaluationValue.setText(mGoodAccelerationNegative+"");
-                mCurveAccelerationPositiveEvaluationValue.setText(mGoodCurveAccelerationPositive+"");
-                mCurveAccelerationNegativeEvaluationValue.setText(mGoodCurveAccelerationNegative+"");
-                mLeapAccelerationPositiveEvaluationValue.setText(mGoodLeapAccelerationPositive+"");
-                mLeapAccelerationNegativeEvaluationValue.setText(mGoodLeapAccelerationNegative+"");
-                mProgressBar.setProgress(mScore % 1000);
-                mRatingBar.setRating(mScore / 1000);
-            }
-        }
-    };
 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this.getActivity())
+/*        LocalBroadcastManager.getInstance(this.getActivity())
                 .registerReceiver(mEvaluationReceiver,
-                        new IntentFilter("Evaluation"));
+                        new IntentFilter("Evaluation"));*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(this.getActivity())
-                .unregisterReceiver(mEvaluationReceiver);
+/*        LocalBroadcastManager.getInstance(this.getActivity())
+                .unregisterReceiver(mEvaluationReceiver);*/
 
     }
 
@@ -179,5 +129,18 @@ public class EvaluationFragment extends Fragment {
         return false;
     }
 
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Bundle bundledData = (Bundle) data;
+        mAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodAcceleration")+"");
+        mAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadAcceleration")+"");
+        mCurveAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodCurveAcceleration")+"");
+        mCurveAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadCurveAcceleration")+"");
+        mLeapAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodLeapAcceleration")+"");
+        mLeapAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadLeapAcceleration")+"");
+        mProgressBar.setProgress(bundledData.getInt("TotalScore") % 100);
+        mRatingBar.setRating(bundledData.getInt("TotalScore")  / 100);
+    }
 
 }
