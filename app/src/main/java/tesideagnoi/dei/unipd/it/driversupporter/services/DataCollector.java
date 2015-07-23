@@ -118,7 +118,7 @@ public class DataCollector extends Service implements SensorEventListener {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             runAsForeground();
             mSamples = new ArrayList<AccelerometerData>();
-            mEU = new EvaluationUnit(mSamples);
+            mEU = new EvaluationUnit(mSamples,this);
             setDataCollectTimer();
             return mEU;
         }

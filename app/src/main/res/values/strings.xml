@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Assistant-San</string>
     <string name="action_settings">Settings</string>
+    <string name="action_reset">Reset</string>
     <string name="action_debug_settings">Opzioni Debug</string>
     <string name="title_activity_info_viewer">InfoViewerActivity</string>
     <string name="hello_world">Hello world!</string>
@@ -23,4 +24,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_no_graphs">NoGraphsActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="preference_file_key">dei.unipd.it.driversupporter.PREFERENCE_FILE_KEY</string>
 </resources>

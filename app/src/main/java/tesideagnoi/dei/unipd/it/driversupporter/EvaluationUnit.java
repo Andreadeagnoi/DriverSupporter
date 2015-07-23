@@ -1,6 +1,8 @@
 package tesideagnoi.dei.unipd.it.driversupporter;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -16,11 +18,12 @@ import java.util.Observable;
 public class EvaluationUnit extends Observable{
     private final ArrayList<AccelerometerData> mAccelerometerData;
     // Soglie costanti per la valutazione
-    static float SPEED_THRESHOLD = -1f;  // circa 20 km/h
+    static float SPEED_THRESHOLD = 5.5f;  // circa 20 km/h
     static float ACC_THRESHOLD = 1.38f; // 5 km/h^2
     static float CURVE_ACC_THRESHOLD = 2f;
     static float JUMP_LEAP_THRESHOLD = 2f;
     static float SPEED_LEAP_THRESHOLD = 8f;
+    private final Context context;
     // Stato
     private int mGoodAccelerationCount;
     private int mBadAccelerationCount;
@@ -30,8 +33,9 @@ public class EvaluationUnit extends Observable{
     private int mBadLeapAccelerationCount;
     private long lastLeapTimestamp;
     private int mScore;
+    private SharedPreferences sharedPref;
 
-    public EvaluationUnit(ArrayList<AccelerometerData> accelerometerData) {
+    public EvaluationUnit(ArrayList<AccelerometerData> accelerometerData, Context context) {
         mAccelerometerData = accelerometerData;
         mGoodAccelerationCount = 0;
         mBadAccelerationCount = 0;
@@ -39,6 +43,7 @@ public class EvaluationUnit extends Observable{
         mBadCurveAccelerationCount = 0;
         mGoodLeapAccelerationCount = 0;
         mBadLeapAccelerationCount = 0;
+        this.context  = context;
     }
 
     /**
@@ -53,9 +58,10 @@ public class EvaluationUnit extends Observable{
         if(mAccelerometerData.size()<2){
             return;
         }
+        sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         // 1^ valutazione: accelerazione/decelerazione progressiva
-        if (mAccelerometerData.get(lastIndex).getSpeed() > SPEED_THRESHOLD) {
-            if (Math.abs(mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) < ACC_THRESHOLD) {
+        if (mAccelerometerData.get(lastIndex).getSpeed() >= sharedPref.getFloat("speedThreshold", SPEED_THRESHOLD)) {
+            if (Math.abs(mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
                 mGoodAccelerationCount++;
                 mScore++;
             } else {
@@ -63,9 +69,9 @@ public class EvaluationUnit extends Observable{
                 mScore-=10;
             }
             // 2^ valutazione: accelerazione in curva
-            if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > CURVE_ACC_THRESHOLD) {
+            if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > sharedPref.getFloat("curveAccThreshold", CURVE_ACC_THRESHOLD)) {
                 if (Math.abs(Math.pow(Math.pow(mAccelerometerData.get(lastIndex).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex).getX(), 2), 0.5)
-                        - Math.pow(Math.pow(mAccelerometerData.get(lastIndex - 1).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex - 1).getX(), 2), 0.5)) < ACC_THRESHOLD) {
+                        - Math.pow(Math.pow(mAccelerometerData.get(lastIndex - 1).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex - 1).getX(), 2), 0.5)) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
                     mGoodCurveAccelerationCount++;
                     mScore++;
                 } else {
@@ -74,9 +80,9 @@ public class EvaluationUnit extends Observable{
                 }
             }
             //TODO: trovare l'accelerazione limite per dare una valutazione positiva sul dosso
-            if (Math.abs(mAccelerometerData.get(lastIndex).getY()) > JUMP_LEAP_THRESHOLD){
+            if (Math.abs(mAccelerometerData.get(lastIndex).getY()) > sharedPref.getFloat("leapAccThreshold",JUMP_LEAP_THRESHOLD)){
                 if(mAccelerometerData.get(lastIndex).getTimestamp()-lastLeapTimestamp<1000000000){
-                    if(mAccelerometerData.get(lastIndex).getSpeed() < SPEED_LEAP_THRESHOLD) {
+                    if(mAccelerometerData.get(lastIndex).getSpeed() < sharedPref.getFloat("leapSpeedThreshold", SPEED_LEAP_THRESHOLD)) {
                         mGoodLeapAccelerationCount++;
                         mScore++;
                     }
