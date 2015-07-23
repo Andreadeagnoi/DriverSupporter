@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Assistant-San</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_info_viewer">InfoViewerActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="default0Value">000.0</string>
+    <string name="SpeedLabel">Speed:</string>
+    <string name="AccelerationLabel">Acceleration: </string>
+    <string name="AccelerationXLabel">X Acceleration: </string>
+    <string name="AccelerationYLabel">Y Acceleration: </string>
+    <string name="AccelerationZLabel">Z Acceleration: </string>
+    <string name="AltitudeLabel">Altitude:</string>
+    <string name="LongitudeLabel">Longitude:</string>
+    <string name="LatitudeLabel">Latitude:</string>
+    <string name="GravityZLabel">Z Gravity:</string>
+    <string name="GravityYLabel">Y Gravity:</string>
+    <string name="GravityXLabel">X Gravity:</string>
+    <string name="default00Value">00.00</string>
+    <string name="action_stop">stop</string>
+    <string name="action_play">play</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_no_graphs">NoGraphsActivity</string>
+</resources>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/relativeLayoutEvaluation">
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ratingBarEvaluation"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBarEvaluation"
+        android:layout_below="@+id/ratingBarEvaluation"
+        android:layout_alignStart="@+id/ratingBarEvaluation" />
+
+    <!-- first row evaluations-->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/double_arrow_up"
+        android:id="@+id/accelerationIcon"
+        android:layout_below="@+id/progressBarEvaluation"
+        android:layout_toStartOf="@+id/progressBarEvaluation"
+        android:layout_marginTop="42dp"
+        android:contentDescription="StraightAcceleration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+"
+        android:id="@+id/firstRowPlus"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/accelerationIcon"
+        android:layout_alignStart="@+id/progressBarEvaluation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/accelerationPositiveEvaluation"
+        android:layout_alignTop="@+id/firstRowPlus"
+        android:layout_toEndOf="@+id/firstRowPlus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="/"
+        android:id="@+id/firstRowSlash"
+        android:layout_alignTop="@+id/accelerationPositiveEvaluation"
+        android:layout_toEndOf="@+id/accelerationPositiveEvaluation"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="-"
+        android:id="@+id/firstRowMinus"
+        android:layout_alignTop="@+id/firstRowSlash"
+        android:layout_toRightOf="@+id/firstRowSlash"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/accelerationNegativeEvaluation"
+        android:layout_alignTop="@+id/firstRowMinus"
+        android:layout_toEndOf="@+id/firstRowMinus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <!-- second row evaluations-->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/double_arrow_right"
+        android:id="@+id/curveAccelerationIcon"
+        android:layout_below="@+id/accelerationIcon"
+        android:layout_toStartOf="@+id/progressBarEvaluation"
+        android:layout_marginTop="0dp"
+        android:contentDescription="Curve Acceleration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+"
+        android:id="@+id/secondRowPlus"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/curveAccelerationIcon"
+        android:layout_alignStart="@+id/progressBarEvaluation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/curveAccelerationPositiveEvaluation"
+        android:layout_alignTop="@+id/secondRowPlus"
+        android:layout_toEndOf="@+id/secondRowPlus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="/"
+        android:id="@+id/secondRowSlash"
+        android:layout_alignTop="@+id/curveAccelerationPositiveEvaluation"
+        android:layout_toEndOf="@+id/curveAccelerationPositiveEvaluation"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="-"
+        android:id="@+id/secondRowMinus"
+        android:layout_alignTop="@+id/secondRowSlash"
+        android:layout_toRightOf="@+id/secondRowSlash"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/curveAccelerationNegativeEvaluation"
+        android:layout_alignTop="@+id/secondRowMinus"
+        android:layout_toEndOf="@+id/secondRowMinus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <!-- third row evaluations-->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_speed_bump"
+        android:id="@+id/leapAccelerationIcon"
+        android:layout_below="@+id/curveAccelerationIcon"
+        android:layout_toStartOf="@+id/progressBarEvaluation"
+        android:layout_marginTop="0dp"
+        android:contentDescription="Leap Acceleration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+"
+        android:id="@+id/thirdRowPlus"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/leapAccelerationIcon"
+        android:layout_alignStart="@+id/progressBarEvaluation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/leapAccelerationPositiveEvaluation"
+        android:layout_alignTop="@+id/thirdRowPlus"
+        android:layout_toEndOf="@+id/thirdRowPlus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="/"
+        android:id="@+id/thirdRowSlash"
+        android:layout_alignTop="@+id/leapAccelerationPositiveEvaluation"
+        android:layout_toEndOf="@+id/leapAccelerationPositiveEvaluation"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="-"
+        android:id="@+id/thirdRowMinus"
+        android:layout_alignTop="@+id/thirdRowSlash"
+        android:layout_toRightOf="@+id/thirdRowSlash"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/leapAccelerationNegativeEvaluation"
+        android:layout_alignTop="@+id/thirdRowMinus"
+        android:layout_toEndOf="@+id/thirdRowMinus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Avvia/Stoppa"
+        android:id="@+id/switchService"
+        android:layout_below="@+id/thirdRowPlus"
+        android:layout_alignStart="@+id/leapAccelerationIcon" />
+
+
+</RelativeLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment"
+        android:name="tesideagnoi.dei.unipd.it.driversupporter.DetailsMonitorFragment"
+        tools:layout="@layout/fragment_details_monitor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/speedGraphFragment"
+        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.SpeedGraphFragment"
+        tools:layout="@layout/fragment_speed_graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/accGraphFragment"
+        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.AccelerationGraphFragment"
+        tools:layout="@layout/fragment_acceleration_graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/altGraphFragment"
+        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.AltitudeGraphFragment"
+        tools:layout="@layout/fragment_altitude_graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>
