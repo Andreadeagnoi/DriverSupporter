@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -58,13 +60,7 @@ public class InfoViewerActivity extends ActionBarActivity
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, DataCollector.class);
-        PendingIntent.getBroadcast(this.getBaseContext(),
-                PendingIntent.FLAG_UPDATE_CURRENT, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        // Bind to WatcherService
-        startService(intent);
-        bindService(intent, mConnection, 0);
+
     }
 
     @Override
@@ -82,28 +78,29 @@ public class InfoViewerActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, DataCollector.class);
-        // Bind to WatcherService
-        bindService(intent, mConnection, 0);
+        if (!isMyServiceRunning(DataCollector.class, this)) {
+            Intent intent = new Intent(this, DataCollector.class);
+            // Bind to WatcherService
+            startService(intent);
+            bindService(intent, mConnection, 0);
+        }
+        else {
+            if(!mBound) {
+                Intent intent = new Intent(getApplicationContext(), DataCollector.class);
+                // Bind to WatcherService
+                bindService(intent, mConnection, 0);
+            }
+        }
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mAccelerationReceiver,
                         new IntentFilter("AccData"));
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // Unbind from the service
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_no_graphs, menu);
+        getMenuInflater().inflate(R.menu.menu_info_viewer, menu);
         return true;
     }
 
@@ -113,34 +110,10 @@ public class InfoViewerActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-       /* //noinspection SimplifiableIfStatement
-        if (id == R.id.action_play) {
-            if(mBound) {
-                mService.play();
-            }
-            else {
-                Intent intent = new Intent(this, DataCollector.class);
-                PendingIntent.getBroadcast(this.getBaseContext(),
-                        PendingIntent.FLAG_UPDATE_CURRENT, intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
-                // Bind to WatcherService
-                startService(intent);
-                bindService(intent, mConnection, 0);
-                mService.play();
-            }
-            return true;
+        if (id == R.id.action_debug_settings){
+            Intent showDebugSettings = new Intent(this, DebugSettingsActivity.class);
+            startActivity(showDebugSettings);
         }
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_stop) {
-            if(mBound) {
-                mService.stop();
-            }
-            return true;
-        }*/
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -161,6 +134,7 @@ public class InfoViewerActivity extends ActionBarActivity
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+
             mBound = false;
         }
     };
@@ -179,7 +153,8 @@ public class InfoViewerActivity extends ActionBarActivity
                 LatLng latLon = new LatLng(lat, lon);
                 mMap.addMarker(new MarkerOptions()
                         .position(latLon)
-                        .title("Marker"));
+                        .title("Marker"))
+                        .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellow_point));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(latLon).zoom(14.0f).build();
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);

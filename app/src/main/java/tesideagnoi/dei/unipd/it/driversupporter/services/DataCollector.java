@@ -52,6 +52,7 @@ public class DataCollector extends Service implements SensorEventListener {
     private float mSensorX;
     private float mSensorY;
     private EvaluationUnit mEU;
+    private boolean mPlaying;
 
 
     public DataCollector() {
@@ -85,7 +86,9 @@ public class DataCollector extends Service implements SensorEventListener {
         mAccelerometer = mSm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mMeasuredData = new AccelerometerData(0, 0, 0, 0);
         mContext = this;
-
+        sampleRate = 200000000; // registro 5 variazioni al secondo
+        mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        mPlaying = false;
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -109,25 +112,27 @@ public class DataCollector extends Service implements SensorEventListener {
     }
 
     public EvaluationUnit play() {
-        mSm.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sampleRate = 200000000; // registro 5 variazioni al secondo
-        mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        runAsForeground();
-        mSamples = new ArrayList<AccelerometerData>();
-        mEU = new EvaluationUnit(mSamples);
-        setDataCollectTimer();
+        if(!mPlaying) {
+            mPlaying = true;
+            mSm.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            runAsForeground();
+            mSamples = new ArrayList<AccelerometerData>();
+            mEU = new EvaluationUnit(mSamples);
+            setDataCollectTimer();
+            return mEU;
+        }
         return mEU;
     }
 
     public EvaluationUnit stop() {
+        mPlaying = false;
         mSm.unregisterListener(this);
         locationManager.removeUpdates(locationListener);
         sTimer.cancel();
         // Scrive su file i dati
         TestUtilities.writeToExternalStorage(mSamples);
         stopForeground(true);
-        stopSelf();
         return mEU;
 
     }
@@ -138,20 +143,19 @@ public class DataCollector extends Service implements SensorEventListener {
      * del service.
      */
     private void runAsForeground() {
-
         Intent notificationIntent = new Intent(this,
                 NoGraphsActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification persistentNotification = new NotificationCompat.Builder(
+        final Notification persistentNotification = new NotificationCompat.Builder(
                 this)
                 .setContentTitle("Assistant-san")
                 .setContentText(
                         "Registrando i dati dell'accelerometro.")
-                .setContentIntent(pendingIntent).build();
-
+                .setContentIntent(pendingIntent)
+                .build();
         startForeground(1,
                 persistentNotification);
 

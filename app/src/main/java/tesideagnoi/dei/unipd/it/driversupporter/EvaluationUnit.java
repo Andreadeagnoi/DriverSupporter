@@ -60,7 +60,7 @@ public class EvaluationUnit extends Observable{
                 mScore++;
             } else {
                 mBadAccelerationCount++;
-                mScore=-10;
+                mScore-=10;
             }
             // 2^ valutazione: accelerazione in curva
             if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > CURVE_ACC_THRESHOLD) {
@@ -70,7 +70,7 @@ public class EvaluationUnit extends Observable{
                     mScore++;
                 } else {
                     mBadCurveAccelerationCount++;
-                    mScore=-10;
+                    mScore-=10;
                 }
             }
             //TODO: trovare l'accelerazione limite per dare una valutazione positiva sul dosso
@@ -82,7 +82,7 @@ public class EvaluationUnit extends Observable{
                     }
                     else {
                         mBadLeapAccelerationCount++;
-                        mScore=-10;
+                        mScore-=10;
                     }
                 }
                 lastLeapTimestamp = mAccelerometerData.get(lastIndex).getTimestamp();

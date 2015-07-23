@@ -6,40 +6,25 @@
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment"
-        android:name="tesideagnoi.dei.unipd.it.driversupporter.DetailsMonitorFragment"
-        tools:layout="@layout/fragment_details_monitor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/speedGraphFragment"
-        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.SpeedGraphFragment"
-        tools:layout="@layout/fragment_speed_graph"
+        android:id="@+id/EvaluationFragment"
+        android:name="tesideagnoi.dei.unipd.it.driversupporter.EvaluationFragment"
+        tools:layout="@layout/fragment_evaluation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="false" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/accGraphFragment"
-        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.AccelerationGraphFragment"
-        tools:layout="@layout/fragment_acceleration_graph"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/altGraphFragment"
-        android:name="tesideagnoi.dei.unipd.it.driversupporter.graphActivity.AltitudeGraphFragment"
-        tools:layout="@layout/fragment_altitude_graph"
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.MapFragment"
+        tools:layout="@layout/fragment_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/EvaluationFragment"
+        android:layout_toEndOf="@+id/EvaluationFragment" />
 
 </RelativeLayout>

@@ -79,12 +79,7 @@ public class EvaluationFragment extends Fragment implements Observer{
                                          boolean isChecked) {
                 //TODO: orrendo che chiama così tante volte metodi dell'activity
                 if (isChecked) {
-                    if (((InfoViewerActivity) getActivity()).mBound) {
-                        ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
-                    } else {
-
-                        ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
-                    }
+                    ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
                 } else {
                     ((InfoViewerActivity)getActivity()).mService.stop().deleteObservers();
                 }
@@ -98,17 +93,11 @@ public class EvaluationFragment extends Fragment implements Observer{
     @Override
     public void onResume() {
         super.onResume();
-/*        LocalBroadcastManager.getInstance(this.getActivity())
-                .registerReceiver(mEvaluationReceiver,
-                        new IntentFilter("Evaluation"));*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
-/*        LocalBroadcastManager.getInstance(this.getActivity())
-                .unregisterReceiver(mEvaluationReceiver);*/
-
     }
 
     /**
