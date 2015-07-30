@@ -52,6 +52,67 @@ public class TestUtilities {
         }
     }
 
+    /**
+     * Scrive sulla memoria esterna del telefono i dati della location  rilevati in array di float.
+     * Usato per testing.
+     */
+    public static void writeToExternalStorageLocation(List<Float[]> locationData) {
+        File root = Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/download");
+        dir.mkdirs();
+
+        File file = new File(dir, System.currentTimeMillis()+"_Location.txt");
+
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println("Timestamp;Latitude;Longitude;Speed");
+            for(int i = 0; i<locationData.size();i++) {
+                pw.println(locationData.get(i)[2]+";"+
+                                locationData.get(i)[0]+";"+
+                                locationData.get(i)[1]+";"+
+                                locationData.get(i)[3]+""
+                );
+            }
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Scrive sulla memoria esterna del telefono i dati della location  rilevati in array di float.
+     * Usato per testing.
+     */
+    public static void writeToExternalStorageSpecter(List<String> specter) {
+        File root = Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/download");
+        dir.mkdirs();
+
+        File file = new File(dir, System.currentTimeMillis()+"_specter.txt");
+
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println("Timestamp;Latitude;Longitude;Speed");
+            for(int i = 0; i<specter.size();i++) {
+                pw.println(specter.get(i));
+            }
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();

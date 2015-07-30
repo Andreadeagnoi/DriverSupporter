@@ -24,4 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.jjoe64:graphview:4.0.1'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.github.wendykierp:JTransforms:3.0'
 }

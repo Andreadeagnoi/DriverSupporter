@@ -21,6 +21,8 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import com.google.android.gms.location.LocationRequest;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -46,7 +48,6 @@ public class DataCollector extends Service implements SensorEventListener {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private float mSpeed;
-    private AccelerometerData mFilteredData;
     private int mLastIndex;
     private Display mDisplay;
     private float mSensorX;
@@ -115,7 +116,7 @@ public class DataCollector extends Service implements SensorEventListener {
         if(!mPlaying) {
             mPlaying = true;
             mSm.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, locationListener);
             runAsForeground();
             mSamples = new ArrayList<AccelerometerData>();
             mEU = new EvaluationUnit(mSamples,this);
@@ -177,9 +178,9 @@ public class DataCollector extends Service implements SensorEventListener {
                 mIntent.putExtra("yAcc", mMeasuredData.getY());
                 mIntent.putExtra("zAcc", mMeasuredData.getZ());
                 mIntent.putExtra("Acc", mMeasuredData.getVectorLength());
-                mIntent.putExtra("Lat", mFilteredData.getLat());
-                mIntent.putExtra("Lon", mFilteredData.getLon());
-                mIntent.putExtra("Speed", mFilteredData.getSpeed());
+                mIntent.putExtra("Lat", mMeasuredData.getLat());
+                mIntent.putExtra("Lon", mMeasuredData.getLon());
+                mIntent.putExtra("Speed", mMeasuredData.getSpeed());
                 LocalBroadcastManager.getInstance(mContext).sendBroadcast(
                         mIntent);
             }
@@ -197,7 +198,6 @@ public class DataCollector extends Service implements SensorEventListener {
                     return;
                 }
             }
-            mFilteredData = new AccelerometerData(timestamp, 0, 0, 0);
             // Controlla l'orientazione dello schermo prima di dare dei valori agli assi
             switch (mDisplay.getRotation()) {
                 case Surface.ROTATION_0:
