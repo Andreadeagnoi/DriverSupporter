@@ -33,6 +33,7 @@ import java.text.BreakIterator;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 
 import static com.google.android.gms.internal.zzhl.runOnUiThread;
 import static tesideagnoi.dei.unipd.it.driversupporter.TestUtilities.writeToExternalStorageLocation;
@@ -48,7 +49,8 @@ public class EngineRPMTrackingFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener  {
 
     public static final int SAMPLESIZE = 1024;
-    public static final int SAMPLERATE = 44100;
+    public static final int FFTSIZE = 1024;
+    public static final int SAMPLERATE = 8000;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private BreakIterator mLatitudeText;
@@ -71,6 +73,11 @@ public class EngineRPMTrackingFragment extends Fragment implements
     private Context context;
     private TextView mRPMValue;
     private ArrayList<Integer> rpmList;
+    private DoubleFFT_1D fftDo;
+    private double[] fft;
+    private LinkedList<Double> fftLinked;
+    private double[] fftTemp;
+    private int j;
 
     public EngineRPMTrackingFragment() {
     }
@@ -96,7 +103,7 @@ public class EngineRPMTrackingFragment extends Fragment implements
                     mRecordThread.interrupt();
                     mRecorder.stop();
                     mRecorder.release();
-                    writeToExternalStorageSpecter(specter);
+                    writeToExternalStorageSpecter(rpmList);
                 }
 
             }
@@ -110,6 +117,8 @@ public class EngineRPMTrackingFragment extends Fragment implements
         mTrack = new AudioTrack(AudioManager.MODE_IN_COMMUNICATION, SAMPLERATE, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, maxJitter, AudioTrack.MODE_STREAM);
         mBuffer = new short[SAMPLESIZE];
+
+
         mRecordThread = new Thread()  {
             @Override
             public void run() {
@@ -125,6 +134,7 @@ public class EngineRPMTrackingFragment extends Fragment implements
     private void record() {
         // Prepara le variabili e il file su cui registrare
         int bufferReadResult = 0;
+        fftTemp = new double[FFTSIZE];
         // Write the output audio in byte
         File root = Environment.getExternalStorageDirectory();
         String filePath = root.getAbsolutePath() + "/download/8k16bitMono.pcm";
@@ -137,6 +147,7 @@ public class EngineRPMTrackingFragment extends Fragment implements
             e.printStackTrace();
         }
 
+        j = 0; //indice per tener conto di quando arrivo a 4096 campioni nella fft
         mRecorder.startRecording();
         // Elabora i dati registrati dal microfono
         while (true) {
@@ -149,37 +160,12 @@ public class EngineRPMTrackingFragment extends Fragment implements
                 return;
             };
             bufferReadResult = mRecorder.read(mBuffer, 0, SAMPLESIZE);
-            DoubleFFT_1D fftDo = new DoubleFFT_1D(mBuffer.length);
-            double[] fft = new double[mBuffer.length * 2];
-            for(int i=0;i<SAMPLESIZE;i++){
-                fft[i] = mBuffer[i];
-            }
-            fftDo.realForward(fft);
-            String fftToString="";
-            double[] magnitude = new double[SAMPLESIZE];
-            for(int i=0;i<(SAMPLESIZE-1)/2-1;i++){
-                double re = fft[2*i];
-                double im =  fft[2*i+1];
-               // fftToString = fftToString + (Math.sqrt(re*re+im*im)+";");
-                magnitude[i]= Math.sqrt(re*re+im*im);
-            }
-            int peak = 0;
-            double peakValue = magnitude[0];
-            for(int i=0;i<15;i++){
-                if(magnitude[i]>peakValue){
-                    peak = i;
-                    peakValue = magnitude[i];
-                }
-            }
-            final int finalPeak = peak;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateRPM(finalPeak);
-                }
-            });
+            fftDo = new DoubleFFT_1D(FFTSIZE);
 
-            specter.add(fftToString);
+            for(int i=0;i<SAMPLESIZE;i++){
+                fftTemp[i+j*1024] = mBuffer[i];
+            }
+            j++;
             try {
                 // writes the data to file from buffer stores the voice buffer
                 byte bData[] = short2byte(mBuffer);
@@ -188,12 +174,54 @@ public class EngineRPMTrackingFragment extends Fragment implements
                 e.printStackTrace();
             }
 
+            if (j > 0) {
+
+                analyzeFFT();
+                j=0;
+            }
+
+
+
         }
     }
 
+    public void analyzeFFT(){
+        double[] fft = fftTemp.clone();
+        fftDo.realForward(fft);
+        String fftToString="";
+        double[] magnitude = new double[FFTSIZE/2];
+        for(int i=0;i<(FFTSIZE-1)/2-1;i++){
+            double re = fft[2*i];
+            double im =  fft[2*i+1];
+            magnitude[i]= Math.sqrt(re*re+im*im);
+            fftToString = fftToString + (magnitude[i]+";"); // SOLO PER TEST
+        }
+        int peak = 0;
+        double peakValue = 0;
+        for(int i=1;i<20;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
+            if(magnitude[i] > peakValue) {
+                if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
+                    peak = i;
+                    peakValue = magnitude[i];
+                }
+            }
+        }
+        final int finalPeak = peak;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateRPM(finalPeak);
+            }
+        });
+    }
+
     public void updateRPM(int peak){
-        rpmList.add(peak* SAMPLERATE /SAMPLESIZE);
-        mRPMValue.setText((peak* SAMPLERATE /SAMPLESIZE)*60/2+"");
+        rpmList.add(peak * SAMPLERATE / FFTSIZE);
+        if(rpmList.size()>2) {
+            if (Math.abs(rpmList.get(rpmList.size() - 2) - rpmList.get(rpmList.size()-1)) < 30) {
+                mRPMValue.setText((peak * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+            }
+        }
     }
     //Conversion of short to byte
     private byte[] short2byte(short[] sData) {
