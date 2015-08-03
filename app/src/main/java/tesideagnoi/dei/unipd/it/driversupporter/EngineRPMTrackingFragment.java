@@ -49,8 +49,8 @@ public class EngineRPMTrackingFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener  {
 
     public static final int SAMPLESIZE = 1024;
-    public static final int FFTSIZE = 1024;
-    public static final int SAMPLERATE = 8000;
+    public static final int FFTSIZE = 2048;
+    public static final int SAMPLERATE = 22050;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private BreakIterator mLatitudeText;
@@ -174,7 +174,7 @@ public class EngineRPMTrackingFragment extends Fragment implements
                 e.printStackTrace();
             }
 
-            if (j > 0) {
+            if (j > 1) {
 
                 analyzeFFT();
                 j=0;
@@ -197,8 +197,8 @@ public class EngineRPMTrackingFragment extends Fragment implements
             fftToString = fftToString + (magnitude[i]+";"); // SOLO PER TEST
         }
         int peak = 0;
-        double peakValue = 0;
-        for(int i=1;i<20;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
+        double peakValue = magnitude[0];
+        for(int i=1;i<13;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
             if(magnitude[i] > peakValue) {
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
                     peak = i;
