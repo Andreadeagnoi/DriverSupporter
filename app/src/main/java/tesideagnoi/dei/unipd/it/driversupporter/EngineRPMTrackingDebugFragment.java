@@ -44,13 +44,16 @@ import static tesideagnoi.dei.unipd.it.driversupporter.TestUtilities.writeToExte
  * Questo fragment conterrà una barra che verra aggiornata in tempo reale con i giri motore e pure la
  * velocità in real time.
  * Utilizzato per il debug del controllo sui giri motore.
+ * Note: sotto i 70 hertz (circa 2100 giri con un motore a 4 cilindri) il riconoscimento non funziona, essendo predominante la banda a frequenze infinitesime.
+ * Soluzione: visualizzo un messaggio "sotto i 2000 giri" e dopo questa soglia visualizzo i giri esatti, arrotondati alle centinaia.
+ * WorkAround: provare a cercare un picco attorno i 30-60 hertz se il picco predominante è sui 0 hertz
  */
-public class EngineRPMTrackingFragment extends Fragment implements
+public class EngineRPMTrackingDebugFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener  {
 
     public static final int SAMPLESIZE = 1024;
     public static final int FFTSIZE = 2048;
-    public static final int SAMPLERATE = 22050;
+    public static final int SAMPLERATE = 8000;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private BreakIterator mLatitudeText;
@@ -78,8 +81,10 @@ public class EngineRPMTrackingFragment extends Fragment implements
     private LinkedList<Double> fftLinked;
     private double[] fftTemp;
     private int j;
+    private TextView mRPMValue2;
+    private TextView hertzValue;
 
-    public EngineRPMTrackingFragment() {
+    public EngineRPMTrackingDebugFragment() {
     }
 
     @Override
@@ -89,6 +94,7 @@ public class EngineRPMTrackingFragment extends Fragment implements
         buildGoogleApiClient();
         mSpeedValue = (TextView) rootView.findViewById(R.id.speedRPMValue);
         mRPMValue = (TextView) rootView.findViewById(R.id.RPMValue);
+        hertzValue = (TextView) rootView.findViewById(R.id.hertzValue);
         mRecordButton = (Button) rootView.findViewById(R.id.recordButton);
         isRecording = false;
         mRecordButton.setOnClickListener(new View.OnClickListener() {
@@ -198,29 +204,66 @@ public class EngineRPMTrackingFragment extends Fragment implements
         }
         int peak = 0;
         double peakValue = magnitude[0];
-        for(int i=1;i<13;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
-            if(magnitude[i] > peakValue) {
+        int[] peaks = new int[2];
+        double[] peakValues = new double[2];
+        peaks[0] = 1; peaks[1] = 0;
+        peakValues[0] = 0; peakValues[1] = 0;
+        for(int i=1;i<30;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
+            if(magnitude[i] > peakValues[0]) {
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
-                    peak = i;
-                    peakValue = magnitude[i];
+                    peaks[1] = peaks[0];
+                    peaks[0] = i;
+                    peakValues[1] = peakValues[0];
+                    peakValues[0] = magnitude[i];
+                }
+            }
+            else if(magnitude[i] > peakValues[1]){
+                if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
+                    peaks[1] = i;
+                    peakValues[1] = magnitude[i];
                 }
             }
         }
-        final int finalPeak = peak;
+        if(peaks[0] < 4){
+            for(int i=4;i<16;i++){
+                if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
+                    peaks[1] = peaks[0];
+                    peaks[0] = i;
+                    peakValues[1] = peakValues[0];
+                    peakValues[0] = magnitude[i];
+                }
+            }
+        }
+        final int[] finalPeaks = new int[2];
+        finalPeaks[0] = peaks[0];
+        finalPeaks[1] = peaks[1];
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateRPM(finalPeak);
+                updateRPM(finalPeaks);
             }
         });
     }
 
-    public void updateRPM(int peak){
-        rpmList.add(peak * SAMPLERATE / FFTSIZE);
+    public void updateRPM(int[] finalPeaks){
+
         if(rpmList.size()>2) {
-            if (Math.abs(rpmList.get(rpmList.size() - 2) - rpmList.get(rpmList.size()-1)) < 30) {
-                mRPMValue.setText((peak * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+            if (Math.abs(rpmList.get(rpmList.size() - 1) - finalPeaks[0]*SAMPLERATE/FFTSIZE) < 30) {
+                rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
+                if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
+                    mRPMValue.setText("<1800 giri");
+                }
+                else {
+                    mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+                }
+
+                hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
             }
+        }
+        else{
+            rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
+            hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
+            mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
         }
     }
     //Conversion of short to byte

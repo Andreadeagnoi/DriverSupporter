@@ -19,9 +19,9 @@ public class EvaluationUnit extends Observable{
     private final ArrayList<AccelerometerData> mAccelerometerData;
     // Soglie costanti per la valutazione
     static float SPEED_THRESHOLD = 5.5f;  // circa 20 km/h
-    static float ACC_THRESHOLD = 1.38f; // 5 km/h^2
-    static float CURVE_ACC_THRESHOLD = 2f;
-    static float JUMP_LEAP_THRESHOLD = 2f;
+    static float ACC_THRESHOLD = 0.76f; // 2.5 km/h^2
+    static float CURVE_ACC_THRESHOLD = 1f;
+    static float JUMP_LEAP_THRESHOLD = 1f;
     static float SPEED_LEAP_THRESHOLD = 8f;
     private final Context context;
     // Stato
@@ -34,11 +34,15 @@ public class EvaluationUnit extends Observable{
     private long lastLeapTimestamp;
     private int mScore;
     private SharedPreferences sharedPref;
+    private int mGoodDecelerationCount;
+    private int mBadDecelerationCount;
 
     public EvaluationUnit(ArrayList<AccelerometerData> accelerometerData, Context context) {
         mAccelerometerData = accelerometerData;
         mGoodAccelerationCount = 0;
         mBadAccelerationCount = 0;
+        mGoodDecelerationCount = 0;
+        mBadDecelerationCount = 0;
         mGoodCurveAccelerationCount = 0;
         mBadCurveAccelerationCount = 0;
         mGoodLeapAccelerationCount = 0;
@@ -61,11 +65,18 @@ public class EvaluationUnit extends Observable{
         sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         // 1^ valutazione: accelerazione/decelerazione progressiva
         if (mAccelerometerData.get(lastIndex).getSpeed() >= sharedPref.getFloat("speedThreshold", SPEED_THRESHOLD)) {
-            if (Math.abs(mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
+            if ((mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
                 mGoodAccelerationCount++;
                 mScore++;
             } else {
                 mBadAccelerationCount++;
+                mScore-=10;
+            }
+            if ((mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
+                mGoodDecelerationCount++;
+                mScore++;
+            } else {
+                mBadDecelerationCount++;
                 mScore-=10;
             }
             // 2^ valutazione: accelerazione in curva
@@ -103,6 +114,8 @@ public class EvaluationUnit extends Observable{
         Bundle bundledData = new Bundle();
         bundledData.putInt("GoodAcceleration", mGoodAccelerationCount);
         bundledData.putInt("BadAcceleration", mBadAccelerationCount);
+        bundledData.putInt("GoodDeceleration", mGoodAccelerationCount);
+        bundledData.putInt("BadDeceleration", mBadAccelerationCount);
         bundledData.putInt("GoodCurveAcceleration", mGoodCurveAccelerationCount);
         bundledData.putInt("BadCurveAcceleration", mBadCurveAccelerationCount);
         bundledData.putInt("GoodLeapAcceleration", mGoodLeapAccelerationCount);
