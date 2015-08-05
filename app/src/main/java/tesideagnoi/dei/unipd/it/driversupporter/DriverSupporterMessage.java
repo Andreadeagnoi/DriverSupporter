@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
  */
 public class DriverSupporterMessage {
     private byte[] timestamp = new byte[8];
+    private byte[] sessionTimestamp = new byte[8];
     private byte[] xAcceleration = new byte[4];
     private byte[] yAcceleration = new byte[4];
     private byte[] zAcceleration = new byte[4];
@@ -24,7 +25,8 @@ public class DriverSupporterMessage {
     private byte[] clientID = new byte[6];
 
     private DriverSupporterMessage(DriverSupporterMessageBuilder builder){
-        this.timestamp = builder.timestamp;
+        this.timestamp = builder.dataTimestamp;
+        this.sessionTimestamp = builder.sessionTimestamp;
         this.xAcceleration = builder.xAcceleration;
         this.yAcceleration = builder.yAcceleration;
         this.zAcceleration = builder.zAcceleration;
@@ -38,11 +40,12 @@ public class DriverSupporterMessage {
     /**
      * Ritorna un array di byte contenente i dati.
      */
-    public byte[] getMessage() {
-        byte[] message = new byte[56];
+    public byte[] getBytes() {
+        byte[] message = new byte[48];
         System.arraycopy(clientID, 0, message, 0, clientID.length);
         System.arraycopy(engineRPM, 0, message,  clientID.length, engineRPM.length);
-        System.arraycopy(timestamp, 0, message,  engineRPM.length, timestamp.length);
+        System.arraycopy(sessionTimestamp, 0, message,  engineRPM.length, sessionTimestamp.length);
+        System.arraycopy(timestamp, 0, message,  sessionTimestamp.length, timestamp.length);
         System.arraycopy(xAcceleration, 0, message,  timestamp.length, xAcceleration.length);
         System.arraycopy(yAcceleration, 0, message, xAcceleration.length, yAcceleration.length);
         System.arraycopy(zAcceleration, 0, message, yAcceleration.length, zAcceleration.length);
@@ -53,7 +56,8 @@ public class DriverSupporterMessage {
     }
 
     public static class DriverSupporterMessageBuilder {
-        private byte[] timestamp = new byte[8];
+        private byte[] dataTimestamp = new byte[8];
+        private byte[] sessionTimestamp = new byte[8];
         private byte[] xAcceleration = new byte[4];
         private byte[] yAcceleration = new byte[4];
         private byte[] zAcceleration = new byte[4];
@@ -63,11 +67,12 @@ public class DriverSupporterMessage {
         private byte[] engineRPM = new byte[2];
         private byte[] clientID = new byte[6];
 
-        public DriverSupporterMessageBuilder(Context context) {
+        public DriverSupporterMessageBuilder(Context context, long sessionTimestamp) {
             WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             WifiInfo info = manager.getConnectionInfo();
             String address = info.getMacAddress();
             clientID = MACParse(address);
+            this.sessionTimestamp = ByteBuffer.allocate(8).putLong(sessionTimestamp).array();
         }
 
         public DriverSupporterMessageBuilder engineRPM(short engineRPM){
@@ -77,7 +82,7 @@ public class DriverSupporterMessage {
         }
 
         public DriverSupporterMessageBuilder accData(AccelerometerData accData){
-            this.timestamp = ByteBuffer.allocate(8).putLong(accData.getTimestamp()).array();
+            this.dataTimestamp = ByteBuffer.allocate(8).putLong(accData.getTimestamp()).array();
             this.xAcceleration = ByteBuffer.allocate(4).putFloat(accData.getX()).array();
             this.yAcceleration = ByteBuffer.allocate(4).putFloat(accData.getY()).array();
             this.zAcceleration = ByteBuffer.allocate(4).putFloat(accData.getZ()).array();
@@ -85,6 +90,10 @@ public class DriverSupporterMessage {
             this.longitude = ByteBuffer.allocate(4).putFloat(accData.getLon()).array();
             this.speed = ByteBuffer.allocate(4).putFloat(accData.getSpeed()).array();
             return this;
+        }
+
+        public DriverSupporterMessage build() {
+            return new DriverSupporterMessage(this);
         }
         /**
          * Effettua il parsing di una stringa contenente un mac e restituisce il mac come array di byte.

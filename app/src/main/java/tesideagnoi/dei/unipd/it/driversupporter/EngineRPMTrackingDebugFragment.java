@@ -83,6 +83,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
     private int j;
     private TextView mRPMValue2;
     private TextView hertzValue;
+    private int mTrashedCounter;
 
     public EngineRPMTrackingDebugFragment() {
     }
@@ -140,6 +141,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
     private void record() {
         // Prepara le variabili e il file su cui registrare
         int bufferReadResult = 0;
+        mTrashedCounter = 0;
         fftTemp = new double[FFTSIZE];
         // Write the output audio in byte
         File root = Environment.getExternalStorageDirectory();
@@ -259,11 +261,33 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
 
                 hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
             }
+            else {
+                //se ne ho buttati via piu di 6 di seguito riprendo ad aggiornare senza guardare il
+                // controllo
+                mTrashedCounter++;
+                if(mTrashedCounter>2){
+                    rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
+                    if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
+                        mRPMValue.setText("<1800 giri");
+                    }
+                    else {
+                        mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+                    }
+
+                    hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
+                    mTrashedCounter = 0;
+                }
+            }
         }
         else{
             rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
-            hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
-            mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+            hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) + "");
+            if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
+                mRPMValue.setText("<1800 giri");
+            }
+            else {
+                mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
+            }
         }
     }
     //Conversion of short to byte

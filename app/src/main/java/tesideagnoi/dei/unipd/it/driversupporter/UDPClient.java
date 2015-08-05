@@ -49,9 +49,9 @@ public class UDPClient {
         }
     }
 
-    public void sendMessage(String messageData)
+    public void sendMessage(byte[] messageData)
     {
-        final String message = messageData;
+        final byte[] message = messageData;
         async_client = new AsyncTask<Void, Void, Void>()
 
         {
@@ -63,8 +63,7 @@ public class UDPClient {
                 try
                 {
                     socket = new DatagramSocket();
-                    DatagramPacket packet;
-                    packet = new DatagramPacket(message.getBytes(), message.length(), serverAddress, SERVER_PORT);
+                    DatagramPacket packet = new DatagramPacket(message, message.length, serverAddress, SERVER_PORT);
                     socket.setBroadcast(true);
                     socket.send(packet);
                 }

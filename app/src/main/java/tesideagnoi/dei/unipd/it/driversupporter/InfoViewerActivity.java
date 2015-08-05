@@ -30,7 +30,8 @@ import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollector;
 
 
 public class InfoViewerActivity extends ActionBarActivity
-                                    implements OnMapReadyCallback {
+//                                    implements OnMapReadyCallback
+                                                                    {
 
 
     private static GoogleMap mMap;
@@ -41,20 +42,20 @@ public class InfoViewerActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_viewer);
 
-        mapFragment = (MapFragment) getFragmentManager()
+       /* mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.mapFragment);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);*/
 
 
     }
 
-
+/*
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = mapFragment.getMap();
         mMap.setTrafficEnabled(true);
         mMap.setMyLocationEnabled(true);
-    }
+    }*/
 
 
     @Override
@@ -151,14 +152,14 @@ public class InfoViewerActivity extends ActionBarActivity
                 double lat = intent.getFloatExtra("Lat", 0f);
                 double lon = intent.getFloatExtra("Lon", 0f);
                 LatLng latLon = new LatLng(lat, lon);
-                mMap.addMarker(new MarkerOptions()
+               /* mMap.addMarker(new MarkerOptions()
                         .position(latLon)
                         .title("Marker"))
                         .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellow_point));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(latLon).zoom(14.0f).build();
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                mMap.moveCamera(cameraUpdate);
+                mMap.moveCamera(cameraUpdate);*/
             }
         }
     };

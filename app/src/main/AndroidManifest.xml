@@ -21,6 +21,11 @@
         <activity
             android:name=".InfoViewerActivity"
             android:label="@string/title_activity_info_viewer" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".NoGraphsActivity"
@@ -49,11 +54,7 @@
         <activity
             android:name=".EngineRPMTrackingDebug"
             android:label="@string/title_activity_engine_rpmtracking" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

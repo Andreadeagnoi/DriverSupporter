@@ -30,9 +30,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import tesideagnoi.dei.unipd.it.driversupporter.AccelerometerData;
+import tesideagnoi.dei.unipd.it.driversupporter.DriverSupporterMessage;
 import tesideagnoi.dei.unipd.it.driversupporter.EvaluationUnit;
 import tesideagnoi.dei.unipd.it.driversupporter.NoGraphsActivity;
 import tesideagnoi.dei.unipd.it.driversupporter.TestUtilities;
+import tesideagnoi.dei.unipd.it.driversupporter.UDPClient;
+
 //TODO: meglio NON filtrati
 public class DataCollector extends Service implements SensorEventListener {
 
@@ -54,6 +57,8 @@ public class DataCollector extends Service implements SensorEventListener {
     private float mSensorY;
     private EvaluationUnit mEU;
     private boolean mPlaying;
+    private long mSessionTimestamp;
+    private UDPClient mUdpSender;
 
 
     public DataCollector() {
@@ -90,6 +95,7 @@ public class DataCollector extends Service implements SensorEventListener {
         sampleRate = 200000000; // registro 5 variazioni al secondo
         mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         mPlaying = false;
+        mUdpSender = new UDPClient();
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -114,6 +120,7 @@ public class DataCollector extends Service implements SensorEventListener {
 
     public EvaluationUnit play() {
         if(!mPlaying) {
+            mSessionTimestamp = System.currentTimeMillis();
             mPlaying = true;
             mSm.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, locationListener);
@@ -228,6 +235,12 @@ public class DataCollector extends Service implements SensorEventListener {
             mMeasuredData.setSpeed(mSpeed);
             // Memorizzo il dato sulla coda
             mSamples.add(mMeasuredData);
+            // Invia i dati della guida al server
+            DriverSupporterMessage message = new DriverSupporterMessage.DriverSupporterMessageBuilder(this,mSessionTimestamp)
+                                                .accData(mMeasuredData)
+                                                .build();
+            mUdpSender.sendMessage(message.getBytes());
+            // Valuta i dati della guida
             mEU.driverEvaluation(mLastIndex + 1);
         }
     }

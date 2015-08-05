@@ -41,6 +41,8 @@ public class EvaluationFragment extends Fragment implements Observer{
     private RatingBar mRatingBar;
     private TextView mAccelerationPositiveEvaluationValue;
     private TextView mAccelerationNegativeEvaluationValue;
+    private TextView mDecelerationPositiveEvaluationValue;
+    private TextView mDecelerationNegativeEvaluationValue;
     private TextView mCurveAccelerationPositiveEvaluationValue;
     private TextView mCurveAccelerationNegativeEvaluationValue;
     private TextView mLeapAccelerationPositiveEvaluationValue;
@@ -57,6 +59,8 @@ public class EvaluationFragment extends Fragment implements Observer{
 
         mAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationPositiveEvaluation);
         mAccelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationNegativeEvaluation);
+        mDecelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationPositiveEvaluation);
+        mDecelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationNegativeEvaluation);
         mCurveAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationPositiveEvaluation);
         mCurveAccelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationNegativeEvaluation);
         mLeapAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.leapAccelerationPositiveEvaluation);
@@ -124,6 +128,8 @@ public class EvaluationFragment extends Fragment implements Observer{
         Bundle bundledData = (Bundle) data;
         mAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodAcceleration")+"");
         mAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadAcceleration")+"");
+        mDecelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodDeceleration")+"");
+        mDecelerationNegativeEvaluationValue.setText(bundledData.getInt("BadDeceleration")+"");
         mCurveAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodCurveAcceleration")+"");
         mCurveAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadCurveAcceleration")+"");
         mLeapAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodLeapAcceleration")+"");

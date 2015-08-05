@@ -216,13 +216,80 @@
         android:layout_toEndOf="@+id/thirdRowMinus"
         android:layout_alignParentStart="false"
         android:textSize="30dp" />
+    
+    <!-- fourth row evaluations-->
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/double_arrow_down"
+        android:id="@+id/decelerationIcon"
+        android:layout_below="@+id/leapAccelerationIcon"
+        android:layout_toStartOf="@+id/progressBarEvaluation"
+        android:layout_marginTop="0dp"
+        android:contentDescription="deceleration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+"
+        android:id="@+id/fourthRowPlus"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/decelerationIcon"
+        android:layout_alignStart="@+id/progressBarEvaluation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/decelerationPositiveEvaluation"
+        android:layout_alignTop="@+id/fourthRowPlus"
+        android:layout_toEndOf="@+id/fourthRowPlus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="/"
+        android:id="@+id/fourthRowSlash"
+        android:layout_alignTop="@+id/decelerationPositiveEvaluation"
+        android:layout_toEndOf="@+id/decelerationPositiveEvaluation"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="-"
+        android:id="@+id/fourthRowMinus"
+        android:layout_alignTop="@+id/fourthRowSlash"
+        android:layout_toRightOf="@+id/fourthRowSlash"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="XXXX"
+        android:id="@+id/decelerationNegativeEvaluation"
+        android:layout_alignTop="@+id/fourthRowMinus"
+        android:layout_toEndOf="@+id/fourthRowMinus"
+        android:layout_alignParentStart="false"
+        android:textSize="30dp" />
+
+    <!-- Switch row -->
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Avvia/Termina"
         android:id="@+id/switchService"
-        android:layout_below="@+id/thirdRowPlus"
+        android:layout_below="@+id/fourthRowPlus"
         android:layout_alignStart="@+id/leapAccelerationIcon" />
 
 
