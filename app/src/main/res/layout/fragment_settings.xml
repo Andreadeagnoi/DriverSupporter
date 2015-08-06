@@ -111,5 +111,23 @@
             android:layout_row="5"
             android:layout_column="0" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Numero cilindri motore"
+            android:id="@+id/textView9"
+            android:layout_row="6"
+            android:layout_column="0" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/cilindNumber"
+            android:layout_row="6"
+            android:layout_column="1" />
+
     </GridLayout>
 </RelativeLayout>

@@ -65,20 +65,25 @@ public class EvaluationUnit extends Observable{
         sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         // 1^ valutazione: accelerazione/decelerazione progressiva
         if (mAccelerometerData.get(lastIndex).getSpeed() >= sharedPref.getFloat("speedThreshold", SPEED_THRESHOLD)) {
-            if ((mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                mGoodAccelerationCount++;
-                mScore++;
-            } else {
-                mBadAccelerationCount++;
-                mScore-=10;
+            float accVar = (mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ());
+            if ( accVar > 0) {
+                if (accVar < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
+                    mGoodAccelerationCount++;
+                    mScore++;
+                } else {
+                    mBadAccelerationCount++;
+                    mScore -= 10;
+                }
             }
-            if ((mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ()) > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                mGoodDecelerationCount++;
-                mScore++;
-            } else {
-                mBadDecelerationCount++;
-                mScore-=10;
-            }
+                else{
+                    if (accVar > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
+                        mGoodDecelerationCount++;
+                        mScore++;
+                    } else {
+                        mBadDecelerationCount++;
+                        mScore -= 10;
+                    }
+                }
             // 2^ valutazione: accelerazione in curva
             if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > sharedPref.getFloat("curveAccThreshold", CURVE_ACC_THRESHOLD)) {
                 if (Math.abs(Math.pow(Math.pow(mAccelerometerData.get(lastIndex).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex).getX(), 2), 0.5)
@@ -114,8 +119,8 @@ public class EvaluationUnit extends Observable{
         Bundle bundledData = new Bundle();
         bundledData.putInt("GoodAcceleration", mGoodAccelerationCount);
         bundledData.putInt("BadAcceleration", mBadAccelerationCount);
-        bundledData.putInt("GoodDeceleration", mGoodAccelerationCount);
-        bundledData.putInt("BadDeceleration", mBadAccelerationCount);
+        bundledData.putInt("GoodDeceleration", mGoodDecelerationCount);
+        bundledData.putInt("BadDeceleration", mBadDecelerationCount);
         bundledData.putInt("GoodCurveAcceleration", mGoodCurveAccelerationCount);
         bundledData.putInt("BadCurveAcceleration", mBadCurveAccelerationCount);
         bundledData.putInt("GoodLeapAcceleration", mGoodLeapAccelerationCount);

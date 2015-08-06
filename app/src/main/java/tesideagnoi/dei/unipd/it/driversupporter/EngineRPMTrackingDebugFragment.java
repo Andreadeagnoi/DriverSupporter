@@ -1,6 +1,7 @@
 package tesideagnoi.dei.unipd.it.driversupporter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -84,6 +85,8 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
     private TextView mRPMValue2;
     private TextView hertzValue;
     private int mTrashedCounter;
+    private SharedPreferences sharedPref;
+    private int mCilNumber;
 
     public EngineRPMTrackingDebugFragment() {
     }
@@ -135,6 +138,8 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         mRequestingLocationUpdates = false;
         specter = new ArrayList<String>();
         rpmList = new ArrayList<Integer>();
+        sharedPref = this.getActivity().getSharedPreferences(this.getActivity().getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        mCilNumber = sharedPref.getInt("cilindNumber",4);
         return rootView;
     }
 
@@ -208,9 +213,9 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         double peakValue = magnitude[0];
         int[] peaks = new int[2];
         double[] peakValues = new double[2];
-        peaks[0] = 1; peaks[1] = 0;
+        peaks[0] = 0; peaks[1] = 0;
         peakValues[0] = 0; peakValues[1] = 0;
-        for(int i=1;i<30;i++){ // Cerca un picco tra 10hz e 120hz (ipotesi ho 4 cilindri)
+        for(int i=1;i<15*mCilNumber/2;i++){ // Cerca un picco tra 10hz e 150hz (ipotesi ho 4 cilindri)
             if(magnitude[i] > peakValues[0]) {
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
                     peaks[1] = peaks[0];
@@ -227,7 +232,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
             }
         }
         if(peaks[0] < 4){
-            for(int i=4;i<16;i++){
+            for(int i=2*mCilNumber/2;i<8*mCilNumber/2;i++){
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
                     peaks[1] = peaks[0];
                     peaks[0] = i;
@@ -248,7 +253,20 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
     }
 
     public void updateRPM(int[] finalPeaks){
+        rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
+        if(rpmList.size()>2) {
+            if (Math.abs(rpmList.get(rpmList.size() - 1) - rpmList.get(rpmList.size() - 2)) < 30) {
+                if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
+                    mRPMValue.setText("<1800 giri");
+                }
+                else {
+                    mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / (mCilNumber/2) + "");
+                }
 
+                hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
+            }
+        }
+        /**
         if(rpmList.size()>2) {
             if (Math.abs(rpmList.get(rpmList.size() - 1) - finalPeaks[0]*SAMPLERATE/FFTSIZE) < 30) {
                 rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
@@ -289,6 +307,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
                 mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
             }
         }
+         */
     }
     //Conversion of short to byte
     private byte[] short2byte(short[] sData) {
@@ -391,6 +410,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        mCilNumber = sharedPref.getInt("cilindNumber", 4);
         locationData = new ArrayList<Float[]>();
         if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
