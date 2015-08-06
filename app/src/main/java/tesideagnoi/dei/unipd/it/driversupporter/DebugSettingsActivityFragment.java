@@ -24,6 +24,7 @@ public class DebugSettingsActivityFragment extends Fragment {
     private EditText mLeapAccThresholdValue;
     private EditText mLeapSpeedThresholdValue;
     private SharedPreferences sharedPref;
+    private EditText mCilindNumber;
 
     public DebugSettingsActivityFragment() {
     }
@@ -45,12 +46,15 @@ public class DebugSettingsActivityFragment extends Fragment {
             editor.putFloat("curveAccThreshold",EvaluationUnit.CURVE_ACC_THRESHOLD);
             editor.putFloat("leapAccThreshold",EvaluationUnit.JUMP_LEAP_THRESHOLD);
             editor.putFloat("leapSpeedThreshold",EvaluationUnit.SPEED_LEAP_THRESHOLD);
+            editor.putInt("cilindNumber",4);
+
             editor.commit();
             mSpeedThresholdValue.setText(sharedPref.getFloat("speedThreshold", EvaluationUnit.SPEED_THRESHOLD) + "");
             mAccThresholdValue.setText(sharedPref.getFloat("accThreshold", EvaluationUnit.ACC_THRESHOLD) + "");
             mCurveAccThresholdValue.setText(sharedPref.getFloat("curveAccThreshold", EvaluationUnit.CURVE_ACC_THRESHOLD) + "");
             mLeapAccThresholdValue.setText(sharedPref.getFloat("leapAccThreshold", EvaluationUnit.JUMP_LEAP_THRESHOLD) + "");
             mLeapSpeedThresholdValue.setText(sharedPref.getFloat("leapSpeedThreshold", EvaluationUnit.SPEED_LEAP_THRESHOLD) + "");
+            mCilindNumber.setText(sharedPref.getInt("cilindNumner", 4) + "");
         }
 
         return super.onOptionsItemSelected(item);
@@ -69,6 +73,7 @@ public class DebugSettingsActivityFragment extends Fragment {
         mCurveAccThresholdValue = (EditText)rootView.findViewById(R.id.curveAccThreshold);
         mLeapAccThresholdValue = (EditText)rootView.findViewById(R.id.leapAccThreshold);
         mLeapSpeedThresholdValue = (EditText)rootView.findViewById(R.id.leapSpeedThreshold);
+        mCilindNumber = (EditText)rootView.findViewById(R.id.cilindNumber);
         Context context = getActivity();
         sharedPref = context.getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -77,6 +82,7 @@ public class DebugSettingsActivityFragment extends Fragment {
         mCurveAccThresholdValue.setText(sharedPref.getFloat("curveAccThreshold", EvaluationUnit.CURVE_ACC_THRESHOLD)+"");
         mLeapAccThresholdValue.setText(sharedPref.getFloat("leapAccThreshold",EvaluationUnit.JUMP_LEAP_THRESHOLD)+"");
         mLeapSpeedThresholdValue.setText(sharedPref.getFloat("leapSpeedThreshold", EvaluationUnit.SPEED_LEAP_THRESHOLD) + "");
+        mCilindNumber.setText(sharedPref.getInt("cilindNumber", 4) + "");
         return rootView;
     }
 
@@ -88,6 +94,7 @@ public class DebugSettingsActivityFragment extends Fragment {
         editor.putFloat("curveAccThreshold",Float.valueOf(String.valueOf(mCurveAccThresholdValue.getText())));
         editor.putFloat("leapAccThreshold",Float.valueOf(String.valueOf(mLeapAccThresholdValue.getText())));
         editor.putFloat("leapSpeedThreshold",Float.valueOf(String.valueOf(mLeapSpeedThresholdValue.getText())));
+        editor.putInt("cilindNumber",Integer.valueOf(String.valueOf(mCilindNumber.getText())));
         editor.commit();
         super.onPause();
     }
