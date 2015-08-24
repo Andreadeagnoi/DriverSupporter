@@ -1,5 +1,8 @@
 package tesideagnoi.dei.unipd.it.driversupporter;
 
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 
 import java.net.DatagramPacket;
@@ -15,10 +18,11 @@ import java.net.UnknownHostException;
  * Created by Andrea on 04/08/2015.
  */
 public class UDPClient {
-    private static final String DEFAULT_SERVER_ADDRESS = "127.0.0.1";
-    private static final int SERVER_PORT = 0;
+    private static final String DEFAULT_SERVER_ADDRESS = "88.80.187.84";
+    private static final int SERVER_PORT = 32000;
     private AsyncTask<Void, Void, Void> async_client;
     private InetAddress serverAddress ;
+    private Context context;
 
     public UDPClient(){
         setServer();
@@ -48,6 +52,8 @@ public class UDPClient {
             e.printStackTrace();
         }
     }
+
+
 
     public void sendMessage(byte[] messageData)
     {

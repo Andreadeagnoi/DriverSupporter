@@ -12,6 +12,8 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -59,6 +61,7 @@ public class DataCollector extends Service implements SensorEventListener {
     private boolean mPlaying;
     private long mSessionTimestamp;
     private UDPClient mUdpSender;
+    private String mMacAddress;
 
 
     public DataCollector() {
@@ -96,6 +99,7 @@ public class DataCollector extends Service implements SensorEventListener {
         mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         mPlaying = false;
         mUdpSender = new UDPClient();
+        setMacAddress();
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -236,7 +240,7 @@ public class DataCollector extends Service implements SensorEventListener {
             // Memorizzo il dato sulla coda
             mSamples.add(mMeasuredData);
             // Invia i dati della guida al server
-            DriverSupporterMessage message = new DriverSupporterMessage.DriverSupporterMessageBuilder(this,mSessionTimestamp)
+            DriverSupporterMessage message = new DriverSupporterMessage.DriverSupporterMessageBuilder(mMacAddress,mSessionTimestamp)
                                                 .accData(mMeasuredData)
                                                 .build();
             mUdpSender.sendMessage(message.getBytes());
@@ -250,5 +254,10 @@ public class DataCollector extends Service implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
+    public void setMacAddress() {
+        WifiManager manager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = manager.getConnectionInfo();
+        mMacAddress = info.getMacAddress();
+    }
 
 }

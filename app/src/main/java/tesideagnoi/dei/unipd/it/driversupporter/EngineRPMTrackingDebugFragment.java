@@ -45,46 +45,42 @@ import static tesideagnoi.dei.unipd.it.driversupporter.TestUtilities.writeToExte
  * Questo fragment conterrà una barra che verra aggiornata in tempo reale con i giri motore e pure la
  * velocità in real time.
  * Utilizzato per il debug del controllo sui giri motore.
- * Note: sotto i 70 hertz (circa 2100 giri con un motore a 4 cilindri) il riconoscimento non funziona, essendo predominante la banda a frequenze infinitesime.
- * Soluzione: visualizzo un messaggio "sotto i 2000 giri" e dopo questa soglia visualizzo i giri esatti, arrotondati alle centinaia.
- * WorkAround: provare a cercare un picco attorno i 30-60 hertz se il picco predominante è sui 0 hertz
+ * Note: sotto i 60 hertz (circa 1800 giri con un motore a 4 cilindri) il riconoscimento non funziona, essendo predominante la banda a frequenze infinitesime.
+ * Soluzione: visualizzo un messaggio "sotto i 1800 giri" e dopo questa soglia visualizzo i giri esatti, arrotondati alle centinaia.
+ * WorkAround: provare a cercare un picco attorno i 30-60 hertz se il picco predominante è sui 0 hertz? Non funziona.
  */
 public class EngineRPMTrackingDebugFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener  {
 
+    // Costanti per registrazione audio e fft
     public static final int SAMPLESIZE = 1024;
     public static final int FFTSIZE = 2048;
     public static final int SAMPLERATE = 8000;
+
+    // Google location api
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private BreakIterator mLatitudeText;
-    private BreakIterator mLongitudeText;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
+    private ArrayList<Float[]> locationData;
     private String mLastUpdateTime;
     private Location mCurrentLocation;
     private float mCurrentSpeed;
-    private ProgressBar mRPMBar;
     private TextView mSpeedValue;
+    // Variabili registratore audio e fft
     private Button mRecordButton;
     private AudioRecord mRecorder;
     private boolean isRecording;
     private short[] mBuffer;
     private AudioTrack mTrack;
     private Thread mRecordThread;
-    private ArrayList<Float[]> locationData;
     private ArrayList<String> specter;
-    private Context context;
     private TextView mRPMValue;
     private ArrayList<Integer> rpmList;
     private DoubleFFT_1D fftDo;
-    private double[] fft;
-    private LinkedList<Double> fftLinked;
     private double[] fftTemp;
     private int j;
-    private TextView mRPMValue2;
     private TextView hertzValue;
-    private int mTrashedCounter;
     private SharedPreferences sharedPref;
     private int mCilNumber;
 
@@ -101,6 +97,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         hertzValue = (TextView) rootView.findViewById(R.id.hertzValue);
         mRecordButton = (Button) rootView.findViewById(R.id.recordButton);
         isRecording = false;
+        // Pulsante usato per avviare e fermare la registrazione audio
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,16 +140,18 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         return rootView;
     }
 
+    /**
+     * Registra una traccia audio PCM non compressa e la memorizza nella memoria esterna cosi da
+     * poter utilizzarla per il debug.
+     * La fft viene fatta nel metodo analyzeFFT.
+     */
     private void record() {
         // Prepara le variabili e il file su cui registrare
         int bufferReadResult = 0;
-        mTrashedCounter = 0;
         fftTemp = new double[FFTSIZE];
         // Write the output audio in byte
         File root = Environment.getExternalStorageDirectory();
         String filePath = root.getAbsolutePath() + "/download/8k16bitMono.pcm";
-
-
         FileOutputStream os = null;
         try {
             os = new FileOutputStream(filePath);
@@ -174,7 +173,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
             };
             bufferReadResult = mRecorder.read(mBuffer, 0, SAMPLESIZE);
             fftDo = new DoubleFFT_1D(FFTSIZE);
-
+            // Copia i campioni correnti in un array temporaneo
             for(int i=0;i<SAMPLESIZE;i++){
                 fftTemp[i+j*1024] = mBuffer[i];
             }
@@ -186,18 +185,18 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            // quando ho nell'array 2048 campioni fa la fft.
             if (j > 1) {
-
                 analyzeFFT();
                 j=0;
             }
-
-
-
         }
     }
 
+    /**
+     * Fa una fft sui campioni audio e ne cerca i picchi entra un range di frequenze adatto a trovare
+     * il rumore del motore.
+     */
     public void analyzeFFT(){
         double[] fft = fftTemp.clone();
         fftDo.realForward(fft);
@@ -215,6 +214,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         double[] peakValues = new double[2];
         peaks[0] = 0; peaks[1] = 0;
         peakValues[0] = 0; peakValues[1] = 0;
+        // Memorizzo due picchi a scopo di debug.
         for(int i=1;i<15*mCilNumber/2;i++){ // Cerca un picco tra 10hz e 150hz (ipotesi ho 4 cilindri)
             if(magnitude[i] > peakValues[0]) {
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
@@ -231,6 +231,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
                 }
             }
         }
+        // Se è predominante una frequenza molto bassa provo a cercare altri picchi a basse frequenze
         if(peaks[0] < 4){
             for(int i=2*mCilNumber/2;i<8*mCilNumber/2;i++){
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
@@ -252,9 +253,14 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         });
     }
 
+    /**
+     * Visualizza il picco in hertz e in giri motore.
+     * @param finalPeaks un array contenente i picchi.
+     */
     public void updateRPM(int[] finalPeaks){
         rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
         if(rpmList.size()>2) {
+            // tentativo di scartare sbalzi improvvisi di frequenze
             if (Math.abs(rpmList.get(rpmList.size() - 1) - rpmList.get(rpmList.size() - 2)) < 30) {
                 if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
                     mRPMValue.setText("<1800 giri");

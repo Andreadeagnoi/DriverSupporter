@@ -42,16 +42,26 @@ public class DriverSupporterMessage {
      */
     public byte[] getBytes() {
         byte[] message = new byte[48];
-        System.arraycopy(clientID, 0, message, 0, clientID.length);
-        System.arraycopy(engineRPM, 0, message,  clientID.length, engineRPM.length);
-        System.arraycopy(sessionTimestamp, 0, message,  engineRPM.length, sessionTimestamp.length);
-        System.arraycopy(timestamp, 0, message,  sessionTimestamp.length, timestamp.length);
-        System.arraycopy(xAcceleration, 0, message,  timestamp.length, xAcceleration.length);
-        System.arraycopy(yAcceleration, 0, message, xAcceleration.length, yAcceleration.length);
-        System.arraycopy(zAcceleration, 0, message, yAcceleration.length, zAcceleration.length);
-        System.arraycopy(latitude, 0, message, zAcceleration.length, latitude.length);
-        System.arraycopy(longitude, 0, message, latitude.length, longitude.length);
-        System.arraycopy(speed, 0, message, longitude.length, speed.length);
+        short lastByte = 0;
+        System.arraycopy(clientID, 0, message, lastByte, clientID.length);
+        lastByte += clientID.length;
+        System.arraycopy(engineRPM, 0, message,  lastByte, engineRPM.length);
+        lastByte += engineRPM.length;
+        System.arraycopy(sessionTimestamp, 0, message,  lastByte, sessionTimestamp.length);
+        lastByte += sessionTimestamp.length;
+        System.arraycopy(timestamp, 0, message, lastByte, timestamp.length);
+        lastByte += timestamp.length;
+        System.arraycopy(xAcceleration, 0, message,  lastByte, xAcceleration.length);
+        lastByte += xAcceleration.length;
+        System.arraycopy(yAcceleration, 0, message, lastByte, yAcceleration.length);
+        lastByte += yAcceleration.length;
+        System.arraycopy(zAcceleration, 0, message, lastByte, zAcceleration.length);
+        lastByte += zAcceleration.length;
+        System.arraycopy(latitude, 0, message,lastByte, latitude.length);
+        lastByte += latitude.length;
+        System.arraycopy(longitude, 0, message, lastByte, longitude.length);
+        lastByte += longitude.length;
+        System.arraycopy(speed, 0, message, lastByte, speed.length);
         return message;
     }
 
@@ -67,11 +77,9 @@ public class DriverSupporterMessage {
         private byte[] engineRPM = new byte[2];
         private byte[] clientID = new byte[6];
 
-        public DriverSupporterMessageBuilder(Context context, long sessionTimestamp) {
-            WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo info = manager.getConnectionInfo();
-            String address = info.getMacAddress();
-            clientID = MACParse(address);
+        public DriverSupporterMessageBuilder(String macAddress, long sessionTimestamp) {
+
+            clientID = MACParse(macAddress);
             this.sessionTimestamp = ByteBuffer.allocate(8).putLong(sessionTimestamp).array();
         }
 
@@ -104,7 +112,7 @@ public class DriverSupporterMessage {
             byte[] mac = new byte[6];
                 String[] addressSplit = address.split(":");
                 for(int i = 0; i < addressSplit.length; i++) {
-                    mac[i] = Integer.decode("0x" + mac[i]).byteValue();
+                    mac[i] = Integer.decode("0x" + addressSplit[i]).byteValue();
                 }
                 return mac;
         }
