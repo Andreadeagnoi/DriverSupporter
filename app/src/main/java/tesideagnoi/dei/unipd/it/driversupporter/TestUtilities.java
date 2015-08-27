@@ -8,6 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -18,12 +21,16 @@ public class TestUtilities {
      * Scrive sulla memoria esterna del telefono i dati dell'accelerometro rilevati.
      * Usato per testing.
      */
-    public static void writeToExternalStorage(List<AccelerometerData> mSamples) {
+    public static void writeToExternalStorage(List<AccelerometerData> mSamples, long timestamp) {
         File root = Environment.getExternalStorageDirectory();
-        File dir = new File (root.getAbsolutePath() + "/download");
+        File dir = new File (root.getAbsolutePath() + "/driverAssistant");
         dir.mkdirs();
 
-        File file = new File(dir, System.currentTimeMillis()+".txt");
+        DateFormat formatter = new SimpleDateFormat("dd MM yyyy-HH:mm");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        String stringDate = formatter.format(calendar.getTime());
+        File file = new File(dir, stringDate+".txt");
 
         try {
             FileOutputStream f = new FileOutputStream(file);

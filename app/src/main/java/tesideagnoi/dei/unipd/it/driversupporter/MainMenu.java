@@ -1,9 +1,13 @@
 package tesideagnoi.dei.unipd.it.driversupporter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class MainMenu extends AppCompatActivity {
 
@@ -11,6 +15,18 @@ public class MainMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        Button launchSession = (Button) findViewById(R.id.newSession);
+        launchSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent launchNewSession = new Intent(myContext(),InfoViewerActivity.class);
+                startActivity(launchNewSession);
+            }
+        });
+    }
+
+    public Context myContext(){
+        return this;
     }
 
     @Override

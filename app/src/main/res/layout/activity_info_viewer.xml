@@ -27,7 +27,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true" />-->
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<!--    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/RPMFragment"
         android:name="tesideagnoi.dei.unipd.it.driversupporter.EngineRPMTrackingDebugFragment"
@@ -36,6 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/EvaluationFragment"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true" />-->
 
 </RelativeLayout>

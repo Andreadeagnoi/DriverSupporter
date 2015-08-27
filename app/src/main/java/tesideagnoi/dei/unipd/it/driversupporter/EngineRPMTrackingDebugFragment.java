@@ -272,48 +272,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
                 hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
             }
         }
-        /**
-        if(rpmList.size()>2) {
-            if (Math.abs(rpmList.get(rpmList.size() - 1) - finalPeaks[0]*SAMPLERATE/FFTSIZE) < 30) {
-                rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
-                if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
-                    mRPMValue.setText("<1800 giri");
-                }
-                else {
-                    mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
-                }
 
-                hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
-            }
-            else {
-                //se ne ho buttati via piu di 6 di seguito riprendo ad aggiornare senza guardare il
-                // controllo
-                mTrashedCounter++;
-                if(mTrashedCounter>2){
-                    rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
-                    if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
-                        mRPMValue.setText("<1800 giri");
-                    }
-                    else {
-                        mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
-                    }
-
-                    hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE)+"");
-                    mTrashedCounter = 0;
-                }
-            }
-        }
-        else{
-            rpmList.add(finalPeaks[0] * SAMPLERATE / FFTSIZE);
-            hertzValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) + "");
-            if(finalPeaks[0] * SAMPLERATE / FFTSIZE < 60){
-                mRPMValue.setText("<1800 giri");
-            }
-            else {
-                mRPMValue.setText((finalPeaks[0] * SAMPLERATE / FFTSIZE) * 60 / 2 + "");
-            }
-        }
-         */
     }
     //Conversion of short to byte
     private byte[] short2byte(short[] sData) {

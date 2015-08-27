@@ -31,9 +31,8 @@ import tesideagnoi.dei.unipd.it.driversupporter.services.DataCollector;
 
 public class InfoViewerActivity extends ActionBarActivity
 //                                    implements OnMapReadyCallback
-                                                                    {
-
-
+{
+    private static EvaluationFragment evaluationFrag;
     private static GoogleMap mMap;
     private MapFragment mapFragment;
 
@@ -41,6 +40,7 @@ public class InfoViewerActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_viewer);
+        evaluationFrag = (EvaluationFragment) getFragmentManager().findFragmentById(R.id.EvaluationFragment);
 
        /* mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.mapFragment);
@@ -131,6 +131,7 @@ public class InfoViewerActivity extends ActionBarActivity
             DataCollector.DataCollectorAccFilteredBinder binder = (DataCollector.DataCollectorAccFilteredBinder) service;
             mService = binder.getService();
             mBound = true;
+            mService.play().addObserver(evaluationFrag);
         }
 
         @Override

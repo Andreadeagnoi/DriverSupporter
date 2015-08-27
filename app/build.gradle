@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "tesideagnoi.dei.unipd.it.driversupporter"
@@ -18,10 +18,15 @@ android {
     }
     productFlavors {
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.android.support:appcompat-v7:23.0.0"
     compile 'com.jjoe64:graphview:4.0.1'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.github.wendykierp:JTransforms:3.0'

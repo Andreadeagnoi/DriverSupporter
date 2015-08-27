@@ -143,7 +143,7 @@ public class DataCollector extends Service implements SensorEventListener {
         locationManager.removeUpdates(locationListener);
         sTimer.cancel();
         // Scrive su file i dati
-        TestUtilities.writeToExternalStorage(mSamples);
+        TestUtilities.writeToExternalStorage(mSamples, mSessionTimestamp);
         stopForeground(true);
         return mEU;
 

@@ -8,16 +8,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ratingBarEvaluation"
+        android:layout_marginTop="58dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBarEvaluation"
-        android:layout_below="@+id/ratingBarEvaluation"
-        android:layout_alignStart="@+id/ratingBarEvaluation" />
 
     <!-- first row evaluations-->
 
@@ -26,64 +19,20 @@
         android:layout_height="wrap_content"
         android:src="@drawable/double_arrow_up"
         android:id="@+id/accelerationIcon"
-        android:layout_below="@+id/progressBarEvaluation"
-        android:layout_toStartOf="@+id/progressBarEvaluation"
-        android:layout_marginTop="42dp"
-        android:contentDescription="StraightAcceleration" />
+        android:layout_marginTop="41dp"
+        android:contentDescription="StraightAcceleration"
+        android:layout_alignStart="@+id/curveAccelerationIcon"
+        android:layout_below="@+id/ratingBarEvaluation" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="+"
-        android:id="@+id/firstRowPlus"
+        android:text="XXXX"
+        android:id="@+id/accelerationEvaluation"
         android:textSize="30dp"
-        android:layout_alignBottom="@+id/accelerationIcon"
-        android:layout_alignStart="@+id/progressBarEvaluation" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/accelerationPositiveEvaluation"
-        android:layout_alignTop="@+id/firstRowPlus"
-        android:layout_toEndOf="@+id/firstRowPlus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="/"
-        android:id="@+id/firstRowSlash"
-        android:layout_alignTop="@+id/accelerationPositiveEvaluation"
-        android:layout_toEndOf="@+id/accelerationPositiveEvaluation"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="-"
-        android:id="@+id/firstRowMinus"
-        android:layout_alignTop="@+id/firstRowSlash"
-        android:layout_toRightOf="@+id/firstRowSlash"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/accelerationNegativeEvaluation"
-        android:layout_alignTop="@+id/firstRowMinus"
-        android:layout_toEndOf="@+id/firstRowMinus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
+        android:layout_alignTop="@+id/accelerationIcon"
+        android:layout_alignStart="@+id/curveAccelerationEvaluation" />
 
     <!-- second row evaluations-->
 
@@ -92,64 +41,19 @@
         android:layout_height="wrap_content"
         android:src="@drawable/double_arrow_right"
         android:id="@+id/curveAccelerationIcon"
+        android:contentDescription="Curve Acceleration"
         android:layout_below="@+id/accelerationIcon"
-        android:layout_toStartOf="@+id/progressBarEvaluation"
-        android:layout_marginTop="0dp"
-        android:contentDescription="Curve Acceleration" />
+        android:layout_alignStart="@+id/leapAccelerationIcon" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="+"
-        android:id="@+id/secondRowPlus"
+        android:text="XXXX"
+        android:id="@+id/curveAccelerationEvaluation"
         android:textSize="30dp"
-        android:layout_alignBottom="@+id/curveAccelerationIcon"
-        android:layout_alignStart="@+id/progressBarEvaluation" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/curveAccelerationPositiveEvaluation"
-        android:layout_alignTop="@+id/secondRowPlus"
-        android:layout_toEndOf="@+id/secondRowPlus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="/"
-        android:id="@+id/secondRowSlash"
-        android:layout_alignTop="@+id/curveAccelerationPositiveEvaluation"
-        android:layout_toEndOf="@+id/curveAccelerationPositiveEvaluation"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="-"
-        android:id="@+id/secondRowMinus"
-        android:layout_alignTop="@+id/secondRowSlash"
-        android:layout_toRightOf="@+id/secondRowSlash"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/curveAccelerationNegativeEvaluation"
-        android:layout_alignTop="@+id/secondRowMinus"
-        android:layout_toEndOf="@+id/secondRowMinus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
+        android:layout_above="@+id/leapAccelerationIcon"
+        android:layout_alignStart="@+id/leapAccelerationEvaluation" />
 
     <!-- third row evaluations-->
 
@@ -158,65 +62,20 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_speed_bump"
         android:id="@+id/leapAccelerationIcon"
+        android:contentDescription="Leap Acceleration"
         android:layout_below="@+id/curveAccelerationIcon"
-        android:layout_toStartOf="@+id/progressBarEvaluation"
-        android:layout_marginTop="0dp"
-        android:contentDescription="Leap Acceleration" />
+        android:layout_alignStart="@+id/decelerationIcon" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="+"
-        android:id="@+id/thirdRowPlus"
+        android:text="XXXX"
+        android:id="@+id/leapAccelerationEvaluation"
         android:textSize="30dp"
-        android:layout_alignBottom="@+id/leapAccelerationIcon"
-        android:layout_alignStart="@+id/progressBarEvaluation" />
+        android:layout_above="@+id/decelerationEvaluation"
+        android:layout_alignStart="@+id/decelerationEvaluation" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/leapAccelerationPositiveEvaluation"
-        android:layout_alignTop="@+id/thirdRowPlus"
-        android:layout_toEndOf="@+id/thirdRowPlus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="/"
-        android:id="@+id/thirdRowSlash"
-        android:layout_alignTop="@+id/leapAccelerationPositiveEvaluation"
-        android:layout_toEndOf="@+id/leapAccelerationPositiveEvaluation"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="-"
-        android:id="@+id/thirdRowMinus"
-        android:layout_alignTop="@+id/thirdRowSlash"
-        android:layout_toRightOf="@+id/thirdRowSlash"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/leapAccelerationNegativeEvaluation"
-        android:layout_alignTop="@+id/thirdRowMinus"
-        android:layout_toEndOf="@+id/thirdRowMinus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-    
     <!-- fourth row evaluations-->
 
     <ImageView
@@ -224,73 +83,29 @@
         android:layout_height="wrap_content"
         android:src="@drawable/double_arrow_down"
         android:id="@+id/decelerationIcon"
+        android:contentDescription="deceleration"
         android:layout_below="@+id/leapAccelerationIcon"
-        android:layout_toStartOf="@+id/progressBarEvaluation"
-        android:layout_marginTop="0dp"
-        android:contentDescription="deceleration" />
+        android:layout_alignStart="@+id/ratingBarEvaluation" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="+"
-        android:id="@+id/fourthRowPlus"
+        android:text="XXXX"
+        android:id="@+id/decelerationEvaluation"
         android:textSize="30dp"
-        android:layout_alignBottom="@+id/decelerationIcon"
-        android:layout_alignStart="@+id/progressBarEvaluation" />
+        android:layout_above="@+id/stopButton"
+        android:layout_alignEnd="@+id/stopButton" />
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/decelerationPositiveEvaluation"
-        android:layout_alignTop="@+id/fourthRowPlus"
-        android:layout_toEndOf="@+id/fourthRowPlus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="/"
-        android:id="@+id/fourthRowSlash"
-        android:layout_alignTop="@+id/decelerationPositiveEvaluation"
-        android:layout_toEndOf="@+id/decelerationPositiveEvaluation"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="-"
-        android:id="@+id/fourthRowMinus"
-        android:layout_alignTop="@+id/fourthRowSlash"
-        android:layout_toRightOf="@+id/fourthRowSlash"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/decelerationNegativeEvaluation"
-        android:layout_alignTop="@+id/fourthRowMinus"
-        android:layout_toEndOf="@+id/fourthRowMinus"
-        android:layout_alignParentStart="false"
-        android:textSize="30dp" />
+        android:text="STOP"
+        android:id="@+id/stopButton"
+        android:layout_below="@+id/decelerationIcon"
+        android:layout_centerHorizontal="true" />
 
     <!-- Switch row -->
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Avvia/Termina"
-        android:id="@+id/switchService"
-        android:layout_below="@+id/fourthRowPlus"
-        android:layout_alignStart="@+id/leapAccelerationIcon" />
 
 
 </RelativeLayout>

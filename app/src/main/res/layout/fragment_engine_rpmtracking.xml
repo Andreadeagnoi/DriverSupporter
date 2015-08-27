@@ -30,9 +30,8 @@
         android:layout_height="wrap_content"
         android:text="Registra"
         android:id="@+id/recordButton"
-        android:layout_marginTop="50dp"
         android:layout_below="@+id/speedRPMValue"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"

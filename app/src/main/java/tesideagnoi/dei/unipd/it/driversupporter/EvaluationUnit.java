@@ -1,7 +1,6 @@
 package tesideagnoi.dei.unipd.it.driversupporter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -13,6 +12,11 @@ import java.util.Observable;
  * dei dati dell'accelerometro del service, che si occupera di richiedere una valutazione ogni volta
  * che ne raccoglie di nuovi. Quindi la classe aggiornerà il proprio stato che sarà osservabile dalle
  * actvity interessate via Observable pattern.
+ * La valutazione avviene in due passi:
+ *  - il primo passo consiste nell'aggiornare i dati correnti;
+ *  - il secondo passo consiste nella valutazione vera e propria e avviene circa una volta al secondo
+ *  (essendo che il listener dell'accelerometro è impostato in modo da rilevare i dati con un periodo di 0,2 secondi
+ *  avrò una valutazione ogni 5 rilevazioni).
  * Created by Andrea on 23/07/2015.
  */
 public class EvaluationUnit extends Observable{
@@ -25,28 +29,20 @@ public class EvaluationUnit extends Observable{
     static float SPEED_LEAP_THRESHOLD = 8f;
     private final Context context;
     // Stato
-    private int mGoodAccelerationCount;
-    private int mBadAccelerationCount;
-    private int mGoodCurveAccelerationCount;
-    private int mBadCurveAccelerationCount;
-    private int mGoodLeapAccelerationCount;
-    private int mBadLeapAccelerationCount;
-    private long lastLeapTimestamp;
-    private int mScore;
+    private EvaluationData oldEvaluationData;
+    private EvaluationData currentEvaluationData;
+    private int mAccEvaluation;
+    private int mDecEvaluation;
+    private int mCurveEvaluation;
+    private int mLeapEvaluation;
+
     private SharedPreferences sharedPref;
-    private int mGoodDecelerationCount;
-    private int mBadDecelerationCount;
+    private boolean isDecelerating;
+
 
     public EvaluationUnit(ArrayList<AccelerometerData> accelerometerData, Context context) {
         mAccelerometerData = accelerometerData;
-        mGoodAccelerationCount = 0;
-        mBadAccelerationCount = 0;
-        mGoodDecelerationCount = 0;
-        mBadDecelerationCount = 0;
-        mGoodCurveAccelerationCount = 0;
-        mBadCurveAccelerationCount = 0;
-        mGoodLeapAccelerationCount = 0;
-        mBadLeapAccelerationCount = 0;
+        currentEvaluationData = new EvaluationData();
         this.context  = context;
     }
 
@@ -62,70 +58,130 @@ public class EvaluationUnit extends Observable{
         if(mAccelerometerData.size()<2){
             return;
         }
+        currentEvaluationData.updateAccumulatedDataCount();
         sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         // 1^ valutazione: accelerazione/decelerazione progressiva
         if (mAccelerometerData.get(lastIndex).getSpeed() >= sharedPref.getFloat("speedThreshold", SPEED_THRESHOLD)) {
             float accVar = (mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ());
-            if ( accVar > 0) {
+            float currAcc = mAccelerometerData.get(lastIndex).getZ();
+            if(currAcc<0 && mAccelerometerData.get(lastIndex-1).getZ()<0) {
+                 isDecelerating = true;
+            }
+            else {
+                isDecelerating = false;
+            }
+            if ( accVar > 0 && currAcc > 0) {
                 if (accVar < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                    mGoodAccelerationCount++;
-                    mScore++;
+                    currentEvaluationData.updatemGoodAccelerationCount();
+                    currentEvaluationData.updatemScore(1);
                 } else {
-                    mBadAccelerationCount++;
-                    mScore -= 10;
+                    currentEvaluationData.updatemBadAccelerationCount();
+                    currentEvaluationData.updatemScore(-10);
                 }
             }
                 else{
+                if(isDecelerating && accVar < 0) {
                     if (accVar > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                        mGoodDecelerationCount++;
-                        mScore++;
+                        currentEvaluationData.updatemGoodDecelerationCount();
+
                     } else {
-                        mBadDecelerationCount++;
-                        mScore -= 10;
+                        currentEvaluationData.updatemBadDecelerationCount();
+
                     }
+                }
                 }
             // 2^ valutazione: accelerazione in curva
             if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > sharedPref.getFloat("curveAccThreshold", CURVE_ACC_THRESHOLD)) {
                 if (Math.abs(Math.pow(Math.pow(mAccelerometerData.get(lastIndex).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex).getX(), 2), 0.5)
                         - Math.pow(Math.pow(mAccelerometerData.get(lastIndex - 1).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex - 1).getX(), 2), 0.5)) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                    mGoodCurveAccelerationCount++;
-                    mScore++;
+                    currentEvaluationData.updatemGoodCurveAccelerationCount();
+
                 } else {
-                    mBadCurveAccelerationCount++;
-                    mScore-=10;
+                    currentEvaluationData.updatemBadCurveAccelerationCount();
+
                 }
             }
-            //TODO: trovare l'accelerazione limite per dare una valutazione positiva sul dosso
+
             if (Math.abs(mAccelerometerData.get(lastIndex).getY()) > sharedPref.getFloat("leapAccThreshold",JUMP_LEAP_THRESHOLD)){
-                if(mAccelerometerData.get(lastIndex).getTimestamp()-lastLeapTimestamp<1000000000){
+                if(mAccelerometerData.get(lastIndex).getTimestamp()-currentEvaluationData.getLastLeapTimestamp()< 5000000000L){
                     if(mAccelerometerData.get(lastIndex).getSpeed() < sharedPref.getFloat("leapSpeedThreshold", SPEED_LEAP_THRESHOLD)) {
-                        mGoodLeapAccelerationCount++;
-                        mScore++;
+                        currentEvaluationData.updatemGoodLeapAccelerationCount();
                     }
                     else {
-                        mBadLeapAccelerationCount++;
-                        mScore-=10;
+                        currentEvaluationData.updatemBadLeapAccelerationCount();
+
                     }
                 }
-                lastLeapTimestamp = mAccelerometerData.get(lastIndex).getTimestamp();
+                currentEvaluationData.setLastLeapTimestamp(mAccelerometerData.get(lastIndex).getTimestamp());
             }
         }
-        if (mScore < 0){
-            mScore = 0;
+
+        if( currentEvaluationData.getAccumulatedDataCount()>4) {
+            oldEvaluationData = currentEvaluationData.makeCopy();
+            currentEvaluationData = new EvaluationData();
+            currentEvaluationData.setLastLeapTimestamp(oldEvaluationData.getLastLeapTimestamp());
+            sendPeriodicNotify();
         }
-        if (mScore > 500){
-            mScore = 500;
-        }
+    }
+
+    private void sendPeriodicNotify() {
         Bundle bundledData = new Bundle();
-        bundledData.putInt("GoodAcceleration", mGoodAccelerationCount);
-        bundledData.putInt("BadAcceleration", mBadAccelerationCount);
-        bundledData.putInt("GoodDeceleration", mGoodDecelerationCount);
-        bundledData.putInt("BadDeceleration", mBadDecelerationCount);
-        bundledData.putInt("GoodCurveAcceleration", mGoodCurveAccelerationCount);
-        bundledData.putInt("BadCurveAcceleration", mBadCurveAccelerationCount);
-        bundledData.putInt("GoodLeapAcceleration", mGoodLeapAccelerationCount);
-        bundledData.putInt("BadLeapAcceleration", mBadLeapAccelerationCount);
-        bundledData.putInt("TotalScore", mScore);
+        if(oldEvaluationData.getmGoodAccelerationCount()>oldEvaluationData.getmBadAccelerationCount()){
+            mAccEvaluation +=10;
+        }
+        else {
+            mAccEvaluation -=10;
+        }
+        if(mAccEvaluation<-50) {
+            mAccEvaluation = -50;
+        }
+        if(mAccEvaluation > 100) {
+            mAccEvaluation = 100;
+        }
+        if(oldEvaluationData.getmGoodDecelerationCount()>oldEvaluationData.getmBadDecelerationCount()){
+            mDecEvaluation += 10;
+        }
+        else {
+            mDecEvaluation -= 10;
+        }
+        if(mDecEvaluation<-50) {
+            mDecEvaluation = -50;
+        }
+        if(mDecEvaluation > 100) {
+            mDecEvaluation = 100;
+        }
+        if(oldEvaluationData.getmGoodCurveAccelerationCount()>oldEvaluationData.getmBadAccelerationCount()){
+            mCurveEvaluation += 10;
+        }
+        else {
+            if (oldEvaluationData.getmGoodCurveAccelerationCount() < oldEvaluationData.getmBadAccelerationCount()) {
+                mCurveEvaluation -= 10;
+            }
+        }
+        if(mCurveEvaluation<-50) {
+            mCurveEvaluation = -50;
+        }
+        if(mCurveEvaluation > 100) {
+            mCurveEvaluation = 100;
+        }
+        if(oldEvaluationData.getmGoodLeapAccelerationCount()>oldEvaluationData.getmBadLeapAccelerationCount()){
+            mLeapEvaluation +=10;
+        }
+        else {
+            if(oldEvaluationData.getmGoodLeapAccelerationCount()<oldEvaluationData.getmBadLeapAccelerationCount()) {
+                mLeapEvaluation -= 10;
+            }
+        }
+        if(mLeapEvaluation<-50) {
+            mLeapEvaluation = -50;
+        }
+        if(mLeapEvaluation > 100) {
+            mLeapEvaluation = 100;
+        }
+        bundledData.putInt("accEvaluation", mAccEvaluation);
+        bundledData.putInt("decEvaluation",mDecEvaluation);
+        bundledData.putInt("curveEvaluation",mCurveEvaluation);
+        bundledData.putInt("leapEvaluation",mLeapEvaluation);
         setChanged();
         notifyObservers(bundledData);
     }

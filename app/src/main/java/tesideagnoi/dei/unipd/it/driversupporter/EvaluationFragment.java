@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -30,24 +32,17 @@ public class EvaluationFragment extends Fragment implements Observer{
 
     // Activity State
     private int mScore;
-    private int mGoodAccelerationPositive  = 0;
-    private int mGoodAccelerationNegative  = 0;
-    private int mGoodCurveAccelerationPositive  = 0;
-    private int mGoodCurveAccelerationNegative  = 0;
-    private int mGoodLeapAccelerationPositive  = 0;
-    private int mGoodLeapAccelerationNegative  = 0;
+    private int mAcceleration  = 0;
+    private int mCurveAcceleration  = 0;
+    private int mLeapAcceleration = 0;
+    private int mDeceleration = 0;
     // Fragment Widget
-    private ProgressBar mProgressBar;
     private RatingBar mRatingBar;
-    private TextView mAccelerationPositiveEvaluationValue;
-    private TextView mAccelerationNegativeEvaluationValue;
-    private TextView mDecelerationPositiveEvaluationValue;
-    private TextView mDecelerationNegativeEvaluationValue;
-    private TextView mCurveAccelerationPositiveEvaluationValue;
-    private TextView mCurveAccelerationNegativeEvaluationValue;
-    private TextView mLeapAccelerationPositiveEvaluationValue;
-    private TextView mLeapAccelerationNegativeEvaluationValue;
-    private Switch mSwitchService;
+    private TextView mAccelerationEvaluationValue;
+    private TextView mDecelerationEvaluationValue;
+    private TextView mCurveAccelerationEvaluationValue;
+    private TextView mLeapAccelerationEvaluationValue;
+    private Button mStopButton;
 
     public EvaluationFragment() {
     }
@@ -57,42 +52,39 @@ public class EvaluationFragment extends Fragment implements Observer{
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_evaluation, container, false);
 
-        mAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationPositiveEvaluation);
-        mAccelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationNegativeEvaluation);
-        mDecelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationPositiveEvaluation);
-        mDecelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationNegativeEvaluation);
-        mCurveAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationPositiveEvaluation);
-        mCurveAccelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationNegativeEvaluation);
-        mLeapAccelerationPositiveEvaluationValue = (TextView) rootView.findViewById(R.id.leapAccelerationPositiveEvaluation);
-        mLeapAccelerationNegativeEvaluationValue = (TextView) rootView.findViewById(R.id.leapAccelerationNegativeEvaluation);
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBarEvaluation);
+        mAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationEvaluation);
+        mDecelerationEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationEvaluation);
+        mCurveAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationEvaluation);
+        mLeapAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.leapAccelerationEvaluation);
         mRatingBar = (RatingBar) rootView.findViewById(R.id.ratingBarEvaluation);
-        mSwitchService = (Switch) rootView.findViewById(R.id.switchService);
-        mAccelerationPositiveEvaluationValue.setText(mGoodAccelerationPositive+"");
-        mAccelerationNegativeEvaluationValue.setText(mGoodAccelerationNegative+"");
-        mCurveAccelerationPositiveEvaluationValue.setText(mGoodCurveAccelerationPositive+"");
-        mCurveAccelerationNegativeEvaluationValue.setText(mGoodCurveAccelerationNegative+"");
-        mLeapAccelerationPositiveEvaluationValue.setText(mGoodLeapAccelerationPositive + "");
-        mLeapAccelerationNegativeEvaluationValue.setText(mGoodLeapAccelerationNegative + "");
-        mProgressBar.setMax(100);
-        final Observer observer = this;
-        mSwitchService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mStopButton = (Button) rootView.findViewById(R.id.stopButton);
+        mAccelerationEvaluationValue.setText(mAcceleration+"");
+        mDecelerationEvaluationValue.setText(mDeceleration+"");
+        mCurveAccelerationEvaluationValue.setText(mCurveAcceleration+"");
+        mLeapAccelerationEvaluationValue.setText(mLeapAcceleration + "");
 
+        mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                //TODO: orrendo che chiama così tante volte metodi dell'activity
-                if (isChecked) {
-                    ((InfoViewerActivity) getActivity()).mService.play().addObserver(observer);
-                } else {
-                    ((InfoViewerActivity)getActivity()).mService.stop().deleteObservers();
+            public void onClick(View v) {
+                ((InfoViewerActivity) getActivity()).mService.stop().deleteObservers();
+            }
+        });
+        /*Thread waitForBoundService = new Thread() {
+            public void run() {
+                while(!((InfoViewerActivity) getActivity()).mBound){
+
                 }
 
             }
-        });
+
+        };
+        waitForBoundService.start();*/
         return rootView;
     }
 
+    public Context myContext(){
+        return this.getActivity();
+    }
 
     @Override
     public void onResume() {
@@ -126,16 +118,32 @@ public class EvaluationFragment extends Fragment implements Observer{
     @Override
     public void update(Observable observable, Object data) {
         Bundle bundledData = (Bundle) data;
-        mAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodAcceleration")+"");
-        mAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadAcceleration")+"");
-        mDecelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodDeceleration")+"");
-        mDecelerationNegativeEvaluationValue.setText(bundledData.getInt("BadDeceleration")+"");
-        mCurveAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodCurveAcceleration")+"");
-        mCurveAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadCurveAcceleration")+"");
-        mLeapAccelerationPositiveEvaluationValue.setText(bundledData.getInt("GoodLeapAcceleration")+"");
-        mLeapAccelerationNegativeEvaluationValue.setText(bundledData.getInt("BadLeapAcceleration")+"");
-        mProgressBar.setProgress(bundledData.getInt("TotalScore") % 100);
-        mRatingBar.setRating(bundledData.getInt("TotalScore")  / 100);
+        mAcceleration = bundledData.getInt("accEvaluation");
+        mDeceleration = bundledData.getInt("decEvaluation");
+        mCurveAcceleration = bundledData.getInt("curveEvaluation");
+        mLeapAcceleration = bundledData.getInt("leapEvaluation");
+        mAccelerationEvaluationValue.setText(mAcceleration + "");
+        mDecelerationEvaluationValue.setText(mDeceleration + "");
+        mCurveAccelerationEvaluationValue.setText(mCurveAcceleration + "");
+        mLeapAccelerationEvaluationValue.setText(mLeapAcceleration + "");
+        int score = 1;
+        if(mAcceleration > 0) {
+            score++;
+        }
+        if(mDeceleration > 0) {
+            score++;
+        }
+        if(mCurveAcceleration > 0) {
+            score++;
+        }
+        if(mLeapAcceleration > 0) {
+            score++;
+        }
+        mRatingBar.setRating((float)score);
     }
 
+   /* public static void playService(){
+        ((InfoViewerActivity) getActivity()).mService.play().addObserver((Observer)this);
+    }
+*/
 }
