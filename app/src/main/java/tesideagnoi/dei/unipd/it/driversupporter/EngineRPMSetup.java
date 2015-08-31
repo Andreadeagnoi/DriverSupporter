@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 
@@ -46,6 +47,15 @@ public class EngineRPMSetup extends Fragment {
     private DoubleFFT_1D fftDo;
     private double[] fftTemp;
     private ArrayList<float[]> calibrationDataArray;
+    private TextView frequency2000Value;
+    private TextView minMagnitude2000Value;
+    private TextView maxMagnitude2000Value;
+    private TextView progressText2000;
+    private TextView progressText3000;
+    private TextView frequency3000Value;
+    private TextView minMagnitude3000Value;
+    private TextView maxMagnitude3000Value;
+    private Button calibrate3000RPM;
 
     public EngineRPMSetup() {
         // Required empty public constructor
@@ -56,11 +66,30 @@ public class EngineRPMSetup extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_engine_rpmsetup, container, false);
+
+        frequency2000Value = (TextView) rootView.findViewById(R.id.frequency2000Value);
+        minMagnitude2000Value = (TextView) rootView.findViewById(R.id.minMagnitude2000Value);
+        maxMagnitude2000Value = (TextView) rootView.findViewById(R.id.maxMagnitude2000Value);
         calibrate2000RPM = (Button) rootView.findViewById(R.id.calibrate2000);
+        progressText2000 = (TextView) rootView.findViewById(R.id.progressText2000);
+        frequency3000Value = (TextView) rootView.findViewById(R.id.frequency3000Value);
+        minMagnitude3000Value = (TextView) rootView.findViewById(R.id.minMagnitude3000Value);
+        maxMagnitude3000Value = (TextView) rootView.findViewById(R.id.maxMagnitude3000Value);
+        calibrate3000RPM = (Button) rootView.findViewById(R.id.calibrate3000);
+        progressText3000 = (TextView) rootView.findViewById(R.id.progressText3000);
+        loadText();
         calibrate2000RPM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              calibrate(2000);
+                progressText2000.setText("Calibrating...");
+                calibrate(2000);
+            }
+        });
+        calibrate3000RPM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressText3000.setText("Calibrating...");
+                calibrate(3000);
             }
         });
         // Inflate the layout for this fragment
@@ -98,7 +127,7 @@ public class EngineRPMSetup extends Fragment {
                 int z= 0; //indice per tener conto di quante volte esegue la fft
                 mRecorder.startRecording();
                 // Elabora i dati registrati dal microfono
-                while (z < 6) {
+                while (z < 20) {
                     bufferReadResult = mRecorder.read(mBuffer, 0, SAMPLESIZE);
                     fftDo = new DoubleFFT_1D(FFTSIZE);
                     // Copia i campioni correnti in un array temporaneo
@@ -116,13 +145,14 @@ public class EngineRPMSetup extends Fragment {
                 computeCalibrationData(rpmThreshold);
             }
         };
+        mRecordThread.start();
 
     }
 
     /**
      * Salva in shared pref i valori necessari per la calibrazione.
      */
-    private void computeCalibrationData(int rpmThreshold) {
+    private void computeCalibrationData(final int rpmThreshold) {
         float frequency4Threshold = calibrationDataArray.get(0)[0]; //valore di frequenza per i giri al minuti analizzati (media sui dati raccolti dalla calibrazione)
         float minMagnitude4Threshold;  //minimo valore di magnitudo della frequenza per i giri al minuti analizzati
         float maxMagnitude4Threshold;  //massimo valore di magnitudo della frequenza per i giri al minuti analizzati
@@ -146,6 +176,27 @@ public class EngineRPMSetup extends Fragment {
         editor.putFloat("minMagnitudeFor" + rpmThreshold, minMagnitude4Threshold);
         editor.putFloat("maxMagnitudeFor" + rpmThreshold, maxMagnitude4Threshold);
         editor.commit();
+        //TODO: meglio impostare un notifying thread con un listener
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadText();
+            }
+        });
+    }
+
+    private void loadText() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        progressText2000.setText("");
+        progressText3000.setText("");
+        frequency2000Value.setText(sharedPref.getFloat("frequencyFor2000",0)+"");
+        minMagnitude2000Value.setText(sharedPref.getFloat("minMagnitudeFor2000",0)+"");
+        maxMagnitude2000Value.setText(sharedPref.getFloat("maxMagnitudeFor2000",0)+"");
+        frequency3000Value.setText(sharedPref.getFloat("frequencyFor3000",0)+"");
+        minMagnitude3000Value.setText(sharedPref.getFloat("minMagnitudeFor3000",0)+"");
+        maxMagnitude3000Value.setText(sharedPref.getFloat("maxMagnitudeFor3000",0)+"");
+
     }
 
     /**
@@ -186,16 +237,10 @@ public class EngineRPMSetup extends Fragment {
                 }
             }
         }
-        // Se è predominante una frequenza molto bassa provo a cercare altri picchi
+        // Se è predominante una frequenza molto bassa scelgo il secondo picco
         if(peaks[0] < 4){
-            for(int i=2*4/2;i<15*4/2;i++){
-                if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
-                    peaks[1] = peaks[0];
-                    peaks[0] = i;
-                    peakValues[1] = peakValues[0];
-                    peakValues[0] = magnitude[i];
-                }
-            }
+            peaks[0] = peaks[1];
+            peakValues[0] = peakValues[1];
         }
         float[] calibrationData = new float[2];
         calibrationData[0] = peaks[0] * SAMPLERATE / FFTSIZE;

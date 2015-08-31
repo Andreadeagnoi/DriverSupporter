@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="78dp"
             android:text="Setup"
-            android:id="@+id/button5"
+            android:id="@+id/setupButton"
             android:layout_row="4"
             android:layout_column="2" />
 
@@ -39,7 +39,7 @@
             android:layout_width="163dp"
             android:layout_height="89dp"
             android:text="Giri motore"
-            android:id="@+id/button"
+            android:id="@+id/engineRPM"
             android:layout_row="3"
             android:layout_column="2" />
     </GridLayout>

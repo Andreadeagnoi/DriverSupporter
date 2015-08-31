@@ -21,7 +21,6 @@
         <activity
             android:name=".InfoViewerActivity"
             android:label="@string/title_activity_info_viewer" >
-
         </activity>
         <activity
             android:name=".NoGraphsActivity"
@@ -59,6 +58,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Setup"
+            android:label="@string/title_activity_setup" >
+        </activity>
+        <activity
+            android:name=".EngineRPMViewer"
+            android:label="@string/title_activity_engine_rpmviewer" >
         </activity>
     </application>
 

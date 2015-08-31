@@ -68,15 +68,14 @@ public class EvaluationUnit extends Observable{
                  isDecelerating = true;
             }
             else {
+
                 isDecelerating = false;
             }
             if ( accVar > 0 && currAcc > 0) {
                 if (accVar < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
                     currentEvaluationData.updatemGoodAccelerationCount();
-                    currentEvaluationData.updatemScore(1);
                 } else {
                     currentEvaluationData.updatemBadAccelerationCount();
-                    currentEvaluationData.updatemScore(-10);
                 }
             }
                 else{
@@ -130,7 +129,9 @@ public class EvaluationUnit extends Observable{
             mAccEvaluation +=10;
         }
         else {
-            mAccEvaluation -=10;
+            if(oldEvaluationData.getmGoodAccelerationCount()<oldEvaluationData.getmBadAccelerationCount()){
+                mAccEvaluation-=10;
+            }
         }
         if(mAccEvaluation<-50) {
             mAccEvaluation = -50;
@@ -142,7 +143,9 @@ public class EvaluationUnit extends Observable{
             mDecEvaluation += 10;
         }
         else {
-            mDecEvaluation -= 10;
+            if(oldEvaluationData.getmGoodDecelerationCount()<oldEvaluationData.getmBadDecelerationCount()){
+                mDecEvaluation -= 10;
+            }
         }
         if(mDecEvaluation<-50) {
             mDecEvaluation = -50;

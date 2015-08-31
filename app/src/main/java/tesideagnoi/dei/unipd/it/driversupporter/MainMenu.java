@@ -23,6 +23,22 @@ public class MainMenu extends AppCompatActivity {
                 startActivity(launchNewSession);
             }
         });
+        Button setup = (Button) findViewById(R.id.setupButton);
+        setup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchSetupRPM = new Intent(myContext(),Setup.class);
+                startActivity(launchSetupRPM);
+            }
+        });
+        Button engineRPM = (Button) findViewById(R.id.engineRPM);
+        engineRPM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchRPMViewer = new Intent(myContext(),EngineRPMViewer.class);
+                startActivity(launchRPMViewer);
+            }
+        });
     }
 
     public Context myContext(){

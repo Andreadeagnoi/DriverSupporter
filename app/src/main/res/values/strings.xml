@@ -27,4 +27,6 @@
     <string name="preference_file_key">dei.unipd.it.driversupporter.PREFERENCE_FILE_KEY</string>
     <string name="title_activity_engine_rpmtracking">EngineRPMTracking</string>
     <string name="title_activity_main_menu">MainMenu</string>
+    <string name="title_activity_setup">Setup</string>
+    <string name="title_activity_engine_rpmviewer">EngineRPMViewer</string>
 </resources>

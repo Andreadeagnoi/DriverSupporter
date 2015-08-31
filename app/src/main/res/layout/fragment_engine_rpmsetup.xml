@@ -8,7 +8,8 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:id="@+id/grid">
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView14"
+            android:id="@+id/minMagnitude2000Value"
             android:layout_row="1"
             android:layout_column="1" />
 
@@ -51,7 +52,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView13"
+            android:id="@+id/frequency2000Value"
             android:layout_row="0"
             android:layout_column="1" />
 
@@ -60,7 +61,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView15"
+            android:id="@+id/maxMagnitude2000Value"
             android:layout_row="2"
             android:layout_column="1" />
 
@@ -71,6 +72,15 @@
             android:id="@+id/calibrate2000"
             android:layout_row="3"
             android:layout_column="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text=""
+            android:id="@+id/progressText2000"
+            android:layout_row="3"
+            android:layout_column="1" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -86,7 +96,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView19"
+            android:id="@+id/frequency3000Value"
             android:layout_row="4"
             android:layout_column="1" />
 
@@ -104,7 +114,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView20"
+            android:id="@+id/minMagnitude3000Value"
             android:layout_row="5"
             android:layout_column="1" />
 
@@ -122,7 +132,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="0.0"
-            android:id="@+id/textView21"
+            android:id="@+id/maxMagnitude3000Value"
             android:layout_row="6"
             android:layout_column="1" />
 
@@ -133,6 +143,17 @@
             android:id="@+id/calibrate3000"
             android:layout_row="7"
             android:layout_column="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text=""
+            android:id="@+id/progressText3000"
+            android:layout_row="7"
+            android:layout_column="1" />
+
+
     </GridLayout>
 
 </FrameLayout>
