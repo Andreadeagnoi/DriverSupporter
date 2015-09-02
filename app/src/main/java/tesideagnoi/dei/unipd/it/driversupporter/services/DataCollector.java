@@ -90,48 +90,51 @@ public class DataCollector extends Service implements SensorEventListener {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Imposta i listener dei sensori
+        // Imposta i riferimenti ai listener dell'accelerometro e del GPS
         mSm = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mMeasuredData = new AccelerometerData(0, 0, 0, 0);
-        mContext = this;
-        sampleRate = 200000000; // registro 5 variazioni al secondo
-        mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-        mPlaying = false;
-        mUdpSender = new UDPClient();
-        setMacAddress();
-        // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                    // Called when a new location is found by the gps.
-                    mLatitude = (float) location.getLatitude();
-                    mLongitude = (float) location.getLongitude();
-                    mSpeed = location.getSpeed();
+                // Called when a new location is found by the gps.
+                mLatitude = (float) location.getLatitude();
+                mLongitude = (float) location.getLongitude();
+                mSpeed = location.getSpeed();
             }
-
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
-
             public void onProviderEnabled(String provider) {
             }
-
             public void onProviderDisabled(String provider) {
             }
         };
 
+        sampleRate = 200000000; // registro 5 variazioni al secondo
+        // Creazione degli oggetti e impostazione delle variabili necessarie
+        mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        mUdpSender = new UDPClient();
+        setMacAddress();
+        mPlaying = false;
+        mContext = this;
     }
 
+    /** Questo metodo viene chiamato subito per come è stato strutturata l'app.
+     *
+     * @return un riferimento all'EvaluationUnit istanziata
+     */
     public EvaluationUnit play() {
         if(!mPlaying) {
             mSessionTimestamp = System.currentTimeMillis();
             mPlaying = true;
+            // registrazione del service ai listener dei sensori
             mSm.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, locationListener);
-            runAsForeground();
+            // Istanziazione delle strutture dati utilizzate
+            mMeasuredData = new AccelerometerData(0, 0, 0, 0);
             mSamples = new ArrayList<AccelerometerData>();
             mEU = new EvaluationUnit(mSamples,this);
-            setDataCollectTimer();
+            //setDataCollectTimer();
+            runAsForeground();
             return mEU;
         }
         return mEU;
@@ -163,9 +166,9 @@ public class DataCollector extends Service implements SensorEventListener {
 
         final Notification persistentNotification = new NotificationCompat.Builder(
                 this)
-                .setContentTitle("Assistant-san")
+                .setContentTitle("Driver Evaluator")
                 .setContentText(
-                        "Registrando i dati dell'accelerometro.")
+                        "Valutando il tuo stile di guida.")
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1,
@@ -175,11 +178,12 @@ public class DataCollector extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return Service.START_STICKY;
     }
 
-    public void setDataCollectTimer() {
+  /* questo metodo non viene più usato poichè si arrangia l'evaluation unit a comunicare con
+  l'activity, rimane qui solo per test futuri
+   public void setDataCollectTimer() {
         sTimer = new Timer();
         sTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -196,7 +200,7 @@ public class DataCollector extends Service implements SensorEventListener {
                         mIntent);
             }
         }, 0, 1000);
-    }
+    }*/
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -204,30 +208,13 @@ public class DataCollector extends Service implements SensorEventListener {
             Long timestamp = event.timestamp;
             mLastIndex = mSamples.size() - 1;
             if (mLastIndex >= 0) {
-                //controllo che sia rispettato il sample rate impostato
+                // Controlla che sia rispettato il sample rate impostato
                 if (timestamp - mSamples.get(mLastIndex).getTimestamp() < sampleRate) {
                     return;
                 }
             }
             // Controlla l'orientazione dello schermo prima di dare dei valori agli assi
-            switch (mDisplay.getRotation()) {
-                case Surface.ROTATION_0:
-                    mSensorX = event.values[0];
-                    mSensorY = event.values[1];
-                    break;
-                case Surface.ROTATION_90:
-                    mSensorX = -event.values[1];
-                    mSensorY = event.values[0];
-                    break;
-                case Surface.ROTATION_180:
-                    mSensorX = -event.values[0];
-                    mSensorY = -event.values[1];
-                    break;
-                case Surface.ROTATION_270:
-                    mSensorX = event.values[1];
-                    mSensorY = -event.values[0];
-                    break;
-            }
+            getOrientedData(event);
             // Registro l'accelerazione e i dati del gps
             mMeasuredData = new AccelerometerData(timestamp,
                     mSensorX,
@@ -246,6 +233,31 @@ public class DataCollector extends Service implements SensorEventListener {
             mUdpSender.sendMessage(message.getBytes());
             // Valuta i dati della guida
             mEU.driverEvaluation(mLastIndex + 1);
+        }
+    }
+
+    /**
+     * Questo metodo assegna i valori degli assi x e y in accordo con l'orientazione dello schermo.
+     * @param event i dati dell'evento dell'accelerometro
+     */
+    private void getOrientedData(SensorEvent event) {
+        switch (mDisplay.getRotation()) {
+            case Surface.ROTATION_0:
+                mSensorX = event.values[0];
+                mSensorY = event.values[1];
+                break;
+            case Surface.ROTATION_90:
+                mSensorX = -event.values[1];
+                mSensorY = event.values[0];
+                break;
+            case Surface.ROTATION_180:
+                mSensorX = -event.values[0];
+                mSensorY = -event.values[1];
+                break;
+            case Surface.ROTATION_270:
+                mSensorX = event.values[1];
+                mSensorY = -event.values[0];
+                break;
         }
     }
 

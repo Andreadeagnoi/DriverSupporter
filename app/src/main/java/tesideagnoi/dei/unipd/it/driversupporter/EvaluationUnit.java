@@ -23,10 +23,10 @@ public class EvaluationUnit extends Observable{
     private final ArrayList<AccelerometerData> mAccelerometerData;
     // Soglie costanti per la valutazione
     static float SPEED_THRESHOLD = 5.5f;  // circa 20 km/h
-    static float ACC_THRESHOLD = 0.76f; // 2.5 km/h^2
-    static float CURVE_ACC_THRESHOLD = 1f;
-    static float JUMP_LEAP_THRESHOLD = 1f;
-    static float SPEED_LEAP_THRESHOLD = 8f;
+    static float ACC_THRESHOLD = 0.76f; // m/s^2
+    static float CURVE_ACC_THRESHOLD = 1f; // m/s^2
+    static float JUMP_LEAP_THRESHOLD = 1f; // m/s^2
+    static float SPEED_LEAP_THRESHOLD = 8f; // circa 30 km/h
     private final Context context;
     // Stato
     private EvaluationData oldEvaluationData;
@@ -68,7 +68,6 @@ public class EvaluationUnit extends Observable{
                  isDecelerating = true;
             }
             else {
-
                 isDecelerating = false;
             }
             if ( accVar > 0 && currAcc > 0) {
@@ -121,7 +120,7 @@ public class EvaluationUnit extends Observable{
             currentEvaluationData.setLastLeapTimestamp(oldEvaluationData.getLastLeapTimestamp());
             sendPeriodicNotify();
         }
-    }
+}
 
     private void sendPeriodicNotify() {
         Bundle bundledData = new Bundle();

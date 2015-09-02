@@ -38,11 +38,11 @@ public class EvaluationFragment extends Fragment implements Observer{
     private int mDeceleration = 0;
     // Fragment Widget
     private RatingBar mRatingBar;
-    private TextView mAccelerationEvaluationValue;
-    private TextView mDecelerationEvaluationValue;
-    private TextView mCurveAccelerationEvaluationValue;
-    private TextView mLeapAccelerationEvaluationValue;
     private Button mStopButton;
+    private ProgressBar mAccelerationBar;
+    private ProgressBar mDecelerationBar;
+    private ProgressBar mCurveBar;
+    private ProgressBar mLeapBar;
 
     public EvaluationFragment() {
     }
@@ -52,16 +52,20 @@ public class EvaluationFragment extends Fragment implements Observer{
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_evaluation, container, false);
 
-        mAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.accelerationEvaluation);
-        mDecelerationEvaluationValue = (TextView) rootView.findViewById(R.id.decelerationEvaluation);
-        mCurveAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.curveAccelerationEvaluation);
-        mLeapAccelerationEvaluationValue = (TextView) rootView.findViewById(R.id.leapAccelerationEvaluation);
         mRatingBar = (RatingBar) rootView.findViewById(R.id.ratingBarEvaluation);
         mStopButton = (Button) rootView.findViewById(R.id.stopButton);
-        mAccelerationEvaluationValue.setText(mAcceleration+"");
-        mDecelerationEvaluationValue.setText(mDeceleration+"");
-        mCurveAccelerationEvaluationValue.setText(mCurveAcceleration+"");
-        mLeapAccelerationEvaluationValue.setText(mLeapAcceleration + "");
+        mAccelerationBar = (ProgressBar) rootView.findViewById(R.id.accelerationBar);
+        mAccelerationBar.setMax(150);
+        mAccelerationBar.setProgress(50);
+        mDecelerationBar = (ProgressBar) rootView.findViewById(R.id.decelerationBar);
+        mDecelerationBar.setMax(150);
+        mDecelerationBar.setProgress(50);
+        mCurveBar = (ProgressBar) rootView.findViewById(R.id.curveBar);
+        mCurveBar.setMax(150);
+        mCurveBar.setProgress(50);
+        mLeapBar = (ProgressBar) rootView.findViewById(R.id.leapBar);
+        mLeapBar.setMax(150);
+        mLeapBar.setProgress(50);
 
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,10 +126,11 @@ public class EvaluationFragment extends Fragment implements Observer{
         mDeceleration = bundledData.getInt("decEvaluation");
         mCurveAcceleration = bundledData.getInt("curveEvaluation");
         mLeapAcceleration = bundledData.getInt("leapEvaluation");
-        mAccelerationEvaluationValue.setText(mAcceleration + "");
-        mDecelerationEvaluationValue.setText(mDeceleration + "");
-        mCurveAccelerationEvaluationValue.setText(mCurveAcceleration + "");
-        mLeapAccelerationEvaluationValue.setText(mLeapAcceleration + "");
+
+        mAccelerationBar.setProgress(mAcceleration+50);
+        mDecelerationBar.setProgress(mDeceleration+50);
+        mCurveBar.setProgress(mCurveAcceleration+50);
+        mLeapBar.setProgress(mLeapAcceleration+50);
         int score = 1;
         if(mAcceleration > 0) {
             score++;

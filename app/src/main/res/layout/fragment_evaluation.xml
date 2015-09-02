@@ -24,15 +24,14 @@
         android:layout_alignStart="@+id/curveAccelerationIcon"
         android:layout_below="@+id/ratingBarEvaluation" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/accelerationEvaluation"
-        android:textSize="30dp"
+    <ProgressBar
+        android:id="@+id/accelerationBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/evaluation_bar"
+        android:layout_width="200dip"
+        android:layout_height="30dip"
         android:layout_alignTop="@+id/accelerationIcon"
-        android:layout_alignStart="@+id/curveAccelerationEvaluation" />
+        android:layout_alignStart="@+id/stopButton" />
 
     <!-- second row evaluations-->
 
@@ -45,16 +44,6 @@
         android:layout_below="@+id/accelerationIcon"
         android:layout_alignStart="@+id/leapAccelerationIcon" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/curveAccelerationEvaluation"
-        android:textSize="30dp"
-        android:layout_above="@+id/leapAccelerationIcon"
-        android:layout_alignStart="@+id/leapAccelerationEvaluation" />
-
     <!-- third row evaluations-->
 
     <ImageView
@@ -65,16 +54,6 @@
         android:contentDescription="Leap Acceleration"
         android:layout_below="@+id/curveAccelerationIcon"
         android:layout_alignStart="@+id/decelerationIcon" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/leapAccelerationEvaluation"
-        android:textSize="30dp"
-        android:layout_above="@+id/decelerationEvaluation"
-        android:layout_alignStart="@+id/decelerationEvaluation" />
 
     <!-- fourth row evaluations-->
 
@@ -87,23 +66,41 @@
         android:layout_below="@+id/leapAccelerationIcon"
         android:layout_alignStart="@+id/ratingBarEvaluation" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="XXXX"
-        android:id="@+id/decelerationEvaluation"
-        android:textSize="30dp"
-        android:layout_above="@+id/stopButton"
-        android:layout_alignEnd="@+id/stopButton" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="STOP"
         android:id="@+id/stopButton"
         android:layout_below="@+id/decelerationIcon"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/curveBar"
+        android:progressDrawable="@drawable/evaluation_bar"
+        android:layout_width="200dip"
+        android:layout_height="30dip"
+        android:layout_alignStart="@+id/accelerationBar"
+        android:layout_below="@+id/accelerationIcon" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/leapBar"
+        android:progressDrawable="@drawable/evaluation_bar"
+        android:layout_width="200dip"
+        android:layout_height="30dip"
+        android:layout_below="@+id/curveAccelerationIcon"
+        android:layout_alignStart="@+id/curveBar" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/decelerationBar"
+        android:progressDrawable="@drawable/evaluation_bar"
+        android:layout_width="200dip"
+        android:layout_height="30dip"
+        android:layout_alignTop="@+id/decelerationIcon"
+        android:layout_alignStart="@+id/leapBar" />
 
     <!-- Switch row -->
 
