@@ -64,32 +64,27 @@ public class EvaluationUnit extends Observable{
         if (mAccelerometerData.get(lastIndex).getSpeed() >= sharedPref.getFloat("speedThreshold", SPEED_THRESHOLD)) {
             float accVar = (mAccelerometerData.get(lastIndex).getZ() - mAccelerometerData.get(lastIndex - 1).getZ());
             float currAcc = mAccelerometerData.get(lastIndex).getZ();
-            if(currAcc<0 && mAccelerometerData.get(lastIndex-1).getZ()<0) {
-                 isDecelerating = true;
-            }
-            else {
-                isDecelerating = false;
-            }
-            if ( accVar > 0 && currAcc > 0) {
+            if ( accVar > 0.1 && currAcc > 0) {
                 if (accVar < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                    currentEvaluationData.updatemGoodAccelerationCount();
+                    currentEvaluationData.updatemGoodDecelerationCount();
                 } else {
-                    currentEvaluationData.updatemBadAccelerationCount();
+                    currentEvaluationData.updatemBadDecelerationCount();
                 }
-            }
-                else{
-                if(isDecelerating && accVar < 0) {
-                    if (accVar > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
-                        currentEvaluationData.updatemGoodDecelerationCount();
-
-                    } else {
-                        currentEvaluationData.updatemBadDecelerationCount();
-
+            } else{
+                if(accVar < -0.1 && currAcc < 0) {
+                        if (accVar > -sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
+                            currentEvaluationData.updatemGoodAccelerationCount();
+                        } else {
+                            currentEvaluationData.updatemBadAccelerationCount();
+                        }
                     }
+
                 }
-                }
+
+
+
             // 2^ valutazione: accelerazione in curva
-            if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > sharedPref.getFloat("curveAccThreshold", CURVE_ACC_THRESHOLD)) {
+        if (Math.abs(mAccelerometerData.get(lastIndex).getX()) > sharedPref.getFloat("curveAccThreshold", CURVE_ACC_THRESHOLD)) {
                 if (Math.abs(Math.pow(Math.pow(mAccelerometerData.get(lastIndex).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex).getX(), 2), 0.5)
                         - Math.pow(Math.pow(mAccelerometerData.get(lastIndex - 1).getZ(), 2) + Math.pow(mAccelerometerData.get(lastIndex - 1).getX(), 2), 0.5)) < sharedPref.getFloat("accThreshold", ACC_THRESHOLD)) {
                     currentEvaluationData.updatemGoodCurveAccelerationCount();
@@ -100,7 +95,7 @@ public class EvaluationUnit extends Observable{
                 }
             }
 
-            if (Math.abs(mAccelerometerData.get(lastIndex).getY()) > sharedPref.getFloat("leapAccThreshold",JUMP_LEAP_THRESHOLD)){
+            if (Math.abs(mAccelerometerData.get(lastIndex).getY()) > sharedPref.getFloat("leapAccThreshold", JUMP_LEAP_THRESHOLD)){
                 if(mAccelerometerData.get(lastIndex).getTimestamp()-currentEvaluationData.getLastLeapTimestamp()< 5000000000L){
                     if(mAccelerometerData.get(lastIndex).getSpeed() < sharedPref.getFloat("leapSpeedThreshold", SPEED_LEAP_THRESHOLD)) {
                         currentEvaluationData.updatemGoodLeapAccelerationCount();
@@ -124,12 +119,12 @@ public class EvaluationUnit extends Observable{
 
     private void sendPeriodicNotify() {
         Bundle bundledData = new Bundle();
-        if(oldEvaluationData.getmGoodAccelerationCount()>oldEvaluationData.getmBadAccelerationCount()){
-            mAccEvaluation +=10;
+        if(oldEvaluationData.getmBadAccelerationCount()>0){
+            mAccEvaluation -=30;
         }
         else {
-            if(oldEvaluationData.getmGoodAccelerationCount()<oldEvaluationData.getmBadAccelerationCount()){
-                mAccEvaluation-=10;
+            if(oldEvaluationData.getmGoodAccelerationCount()>0){
+                mAccEvaluation+=5;
             }
         }
         if(mAccEvaluation<-50) {
@@ -138,12 +133,12 @@ public class EvaluationUnit extends Observable{
         if(mAccEvaluation > 100) {
             mAccEvaluation = 100;
         }
-        if(oldEvaluationData.getmGoodDecelerationCount()>oldEvaluationData.getmBadDecelerationCount()){
-            mDecEvaluation += 10;
+        if(oldEvaluationData.getmBadDecelerationCount()>0){
+            mDecEvaluation -= 30;
         }
         else {
-            if(oldEvaluationData.getmGoodDecelerationCount()<oldEvaluationData.getmBadDecelerationCount()){
-                mDecEvaluation -= 10;
+            if(oldEvaluationData.getmGoodDecelerationCount()>0){
+                mDecEvaluation += 5;
             }
         }
         if(mDecEvaluation<-50) {
@@ -152,12 +147,12 @@ public class EvaluationUnit extends Observable{
         if(mDecEvaluation > 100) {
             mDecEvaluation = 100;
         }
-        if(oldEvaluationData.getmGoodCurveAccelerationCount()>oldEvaluationData.getmBadAccelerationCount()){
-            mCurveEvaluation += 10;
+        if(oldEvaluationData.getmBadAccelerationCount()>0){
+            mCurveEvaluation -= 30;
         }
         else {
-            if (oldEvaluationData.getmGoodCurveAccelerationCount() < oldEvaluationData.getmBadAccelerationCount()) {
-                mCurveEvaluation -= 10;
+            if (oldEvaluationData.getmGoodCurveAccelerationCount()>0) {
+                mCurveEvaluation += 5;
             }
         }
         if(mCurveEvaluation<-50) {
@@ -166,12 +161,12 @@ public class EvaluationUnit extends Observable{
         if(mCurveEvaluation > 100) {
             mCurveEvaluation = 100;
         }
-        if(oldEvaluationData.getmGoodLeapAccelerationCount()>oldEvaluationData.getmBadLeapAccelerationCount()){
-            mLeapEvaluation +=10;
+        if(oldEvaluationData.getmBadLeapAccelerationCount()>0){
+            mLeapEvaluation -=30;
         }
         else {
-            if(oldEvaluationData.getmGoodLeapAccelerationCount()<oldEvaluationData.getmBadLeapAccelerationCount()) {
-                mLeapEvaluation -= 10;
+            if(oldEvaluationData.getmGoodLeapAccelerationCount()>0) {
+                mLeapEvaluation += 5;
             }
         }
         if(mLeapEvaluation<-50) {

@@ -113,9 +113,10 @@ public class DataCollector extends Service implements SensorEventListener {
         // Creazione degli oggetti e impostazione delle variabili necessarie
         mDisplay = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         mUdpSender = new UDPClient();
-        setMacAddress();
         mPlaying = false;
         mContext = this;
+        setMacAddress();
+
     }
 
     /** Questo metodo viene chiamato subito per come è stato strutturata l'app.
@@ -144,7 +145,7 @@ public class DataCollector extends Service implements SensorEventListener {
         mPlaying = false;
         mSm.unregisterListener(this);
         locationManager.removeUpdates(locationListener);
-        sTimer.cancel();
+        //sTimer.cancel();
         // Scrive su file i dati
         TestUtilities.writeToExternalStorage(mSamples, mSessionTimestamp);
         stopForeground(true);

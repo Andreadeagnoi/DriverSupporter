@@ -221,7 +221,7 @@ public class EngineRPMSetup extends Fragment {
         peaks[0] = 0; peaks[1] = 0;
         peakValues[0] = 0; peakValues[1] = 0;
         // Memorizzo due picchi a scopo di debug.
-        for(int i=1;i<15*4/2;i++){ // Cerca un picco tra 10hz e 150hz (ipotesi ho 4 cilindri)
+        for(int i=1;i<50;i++){ // Cerca un picco tra 10hz e 200hz (ipotesi ho max 6 cilindri)
             if(magnitude[i] > peakValues[0]) {
                 if (magnitude[i - 1] < magnitude[i]  && magnitude[i + 1] < magnitude[i] ) {
                     peaks[1] = peaks[0];

@@ -151,7 +151,7 @@ public class EngineRPMTrackingDebugFragment extends Fragment implements
         fftTemp = new double[FFTSIZE];
         // Write the output audio in byte
         File root = Environment.getExternalStorageDirectory();
-        String filePath = root.getAbsolutePath() + "/download/8k16bitMono.pcm";
+        String filePath = root.getAbsolutePath() + "/driverAssistant/"+System.currentTimeMillis()+".pcm";
         FileOutputStream os = null;
         try {
             os = new FileOutputStream(filePath);

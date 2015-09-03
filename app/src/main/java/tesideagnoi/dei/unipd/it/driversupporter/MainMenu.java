@@ -19,7 +19,7 @@ public class MainMenu extends AppCompatActivity {
         launchSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent launchNewSession = new Intent(myContext(),InfoViewerActivity.class);
+                Intent launchNewSession = new Intent(myContext(), InfoViewerActivity.class);
                 startActivity(launchNewSession);
             }
         });
@@ -37,6 +37,14 @@ public class MainMenu extends AppCompatActivity {
             public void onClick(View v) {
                 Intent launchRPMViewer = new Intent(myContext(),EngineRPMViewer.class);
                 startActivity(launchRPMViewer);
+            }
+        });
+        Button logView = (Button) findViewById(R.id.logView);
+        logView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchLogView = new Intent(myContext(), EngineRPMTrackingDebug.class);
+                startActivity(launchLogView);
             }
         });
     }
